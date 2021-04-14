@@ -34,7 +34,7 @@ function createWindow () {
       // preload: path.resolve(__dirname, 'electron-preload.js')
 
       webSecurity: false,
-    }
+    },
   })
 
   mainWindow.loadURL(process.env.APP_URL,{ userAgent: 'clubhouse/269 (iPhone; iOS 13.5.1; Scale/3.00)' })
