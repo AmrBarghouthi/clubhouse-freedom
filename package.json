@@ -14,7 +14,9 @@
     "agora-rtc-sdk": "^3.5.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "quasar": "^1.0.0"
+    "libphonenumber-js": "^1.9.16",
+    "quasar": "^1.0.0",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
