@@ -14,3 +14,8 @@
 .rounded-base {
   border-radius: 14px;
 }
+
+.smooth-corners {
+  --smooth-corners: 2.6;
+  mask-image: paint(smooth-corners);
+}

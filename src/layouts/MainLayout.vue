@@ -30,8 +30,9 @@
             outline
           />
           <q-avatar
-            class="q-ml-sm"
+            class="q-ml-sm bg-primary smooth-corners"
             size="md"
+            square
           >
             <img :src="authData.user_profile.photo_url">
           </q-avatar>

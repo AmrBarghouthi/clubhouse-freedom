@@ -16,14 +16,16 @@
               <q-avatar
                 v-if="channel.users.length > 0"
                 size="2.5rem"
-                class="channels-list-avatar-first"
+                class="channels-list-avatar-first smooth-corners"
+                square
               >
                 <img :src="channel.users[0].photo_url">
               </q-avatar>
               <q-avatar
                 v-if="channel.users.length > 1"
                 size="2.5rem"
-                class="channels-list-avatar-second"
+                class="channels-list-avatar-second smooth-corners"
+                square
               >
                 <img :src="channel.users[1].photo_url">
               </q-avatar>

@@ -7664,6 +7664,11 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
+smooth-corners@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/smooth-corners/-/smooth-corners-1.0.6.tgz#b7228eb9927645a08497790b7319b8d7bc04c9e7"
+  integrity sha512-Gnxr2iDm7SqaWM18n32l1tKbt1cJDwKKX0id+yL/JhatfNnFjM0CezmyTh6hvcObMhVLac1naFbb5aHPdLOfow==
+
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
