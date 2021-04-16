@@ -37,6 +37,9 @@ module.exports = {
     'indent': [
       'warn',
       2,
+      {
+        SwitchCase: 1,
+      }
     ],
     'vue/html-indent': [
         'warn',

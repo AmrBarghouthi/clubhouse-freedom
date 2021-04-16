@@ -1,111 +1,116 @@
 <template>
-  <div class="fixed-center">
-    <q-form
-      class="q-gutter-md"
-      @submit="nextPressed"
-      @reset="backPressed"
-    >
-      <q-input
-        v-model="number"
-        filled
-        label="Your phone number"
-        hint="+962796555666"
-        lazy-rules
-        :disable="smsSent"
-        :rules="[val => (val && val.length > 0) || 'Please type your phone number']"
-      />
-      <q-input
-        v-if="smsSent"
-        v-model="code"
-        filled
-        label="4 Digit Code"
-      />
-      <div>
-        <q-btn
-          v-if="smsSent"
-          label="Back"
-          type="reset"
-          color="primary"
-          flat
-          class="float-left"
-        />
-        <q-btn
-          label="Next"
-          type="submit"
-          color="primary"
-          class="float-right"
-        />
-      </div>
-    </q-form>
+  <div class="q-mx-auto centered">
+    <PhoneNumberForm
+      v-show="!canEnterSmsVerificationCode"
+      class="q-mx-auto full-width"
+      :busy="state.isBusy"
+      :loading="state.isBusy"
+      @submit="signInGetSms($event)"
+    />
+    <SmsVerificationCodeForm
+      v-if="canEnterSmsVerificationCode"
+      class="q-mx-auto full-width"
+      :busy="state.isBusy"
+      :loading="state.isBusy"
+      :attempts-remaining="numberOfSmsVerificationAttemptsRemaining"
+      @submit="signInComplete"
+      @resend-sms="signInResendSms"
+      @get-via-call="signInGetCall"
+    />
   </div>
 </template>
 
 <script>
-import ajax from '../../ajax'
-import Vue from 'vue'
+
+import PhoneNumberForm from 'components/Auth/Login/PhoneNumberForm'
+import SmsVerificationCodeForm from 'components/Auth/Login/SmsVerificationCodeForm'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'Login',
-  data (){
+  name: 'AuthLoginPage',
+  components: {
+    PhoneNumberForm,
+    SmsVerificationCodeForm,
+  },
+  data () {
     return {
-      number: '',
-      code: '',
-      smsSent: false,
+      state: {
+        isBusy: false,
+      },
+      phoneNumber: '',
     }
   },
+  computed: {
+    ...mapGetters({
+      canEnterSmsVerificationCode: 'auth/canEnterSmsVerificationCode',
+      numberOfSmsVerificationAttemptsRemaining: 'auth/numberOfSmsVerificationAttemptsRemaining',
+    }),
+  },
+  watch: {
+    numberOfSmsVerificationAttemptsRemaining: {
+      immediate: true,
+      handler (newVal) {
+        if (newVal === 0) {
+          this.$q.notify({
+            message: 'Too many varification attempts. You may use a different number of try again.',
+            color: 'negative',
+            position: 'top',
+          })
+          this.signInRestart()
+        }
+      },
+    },
+  },
+  mounted () {
+    this.restartAuthenticaton()
+  },
   methods: {
-    backPressed (){
-      this.smsSent = false
-      this.code = ''
+    ...mapActions({
+      startPhoneNumberAuth: 'auth/startPhoneNumberAuth',
+      resendPhoneNumberAuth: 'auth/resendPhoneNumberAuth',
+      callPhoneNumberAuth: 'auth/callPhoneNumberAuth',
+      restartAuthenticaton: 'auth/restartAuthenticaton',
+      completePhoneNumberAuth: 'auth/completePhoneNumberAuth',
+    }),
+    signInGetSms (phoneNumber) {
+      this.phoneNumber = phoneNumber
+      this.state.isBusy = true
+      this.startPhoneNumberAuth({ phoneNumber })
+        .finally(() => this.state.isBusy = false)
     },
-    nextPressed (){
-      if (!this.smsSent)
-        this.getVerficationSMS()
-      else
-        this.submitCode()
+    signInResendSms () {
+      const phoneNumber = this.phoneNumber
+      this.state.isBusy = true
+      this.resendPhoneNumberAuth({ phoneNumber })
+        .finally(() => this.state.isBusy = false)
     },
-    async getVerficationSMS () {
-      ajax
-        .post('start_phone_number_auth', {
-          phone_number: this.number,
-        })
-        .then(res => this.handleSMSSendResponse(res.data))
-        .catch(err => this.handleVerficationErorr(err))
+    signInGetCall () {
+      const phoneNumber = this.phoneNumber
+      this.state.isBusy = true
+      this.callPhoneNumberAuth({ phoneNumber })
+        .finally(() => this.state.isBusy = false)
     },
-    handleVerficationErorr (err){
-      if (err.response)
-        this.handleSMSSendResponse(err.response.data)
-      else
-        console.log(err)
+    signInRestart () {
+      this.restartAuthenticaton()
     },
-    handleSMSSendResponse (data) {
-      console.log(data)
-      if (data.is_blocked) {
-        alert('your account is blocked')
-      } else if (data.success) {
-        this.smsSent = true
-      } else alert(data.error_message)
-    },
-    submitCode () {
-      ajax
-        .post('complete_phone_number_auth', {
-          phone_number: this.number,
-          verification_code: this.code,
-        })
-        .then(res => this.handleLoginSuccess(res.data))
-        .catch(err => this.handleLoginFail(err))
-    },
-    handleLoginSuccess (data) {
-      console.log(data)
-      Vue.prototype.$authdata = data
-      localStorage.setItem('authData', JSON.stringify(data))
-      this.$router.push({ name: 'index' })
-    },
-    handleLoginFail (data) {
-      console.log(data)
+    signInComplete (verificationCode) {
+      this.state.isBusy = true
+      const payload = {
+        phoneNumber: this.phoneNumber,
+        verificationCode,
+      }
+      this.completePhoneNumberAuth(payload)
+        .finally(() => this.state.isBusy = false)
     },
   },
 }
 </script>
 
-<style></style>
+<style>
+.centered {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  max-width: 320px;
+}
+</style>

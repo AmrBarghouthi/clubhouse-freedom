@@ -1,8 +1,17 @@
+import store from 'src/store'
+
 
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: (to, from, next) => {
+      const signUpStage = store.getters['authsignUp/Stage']
+      if (signUpStage !== 'COMPLETED') {
+        next({ name: 'auth.login' })
+      }
+      next()
+    },
     children: [
       {
         path: '',
@@ -19,6 +28,16 @@ const routes = [
         path: 'login',
         name: 'auth.login',
         component: () => import('pages/Auth/Login'),
+      },
+      {
+        path: 'onboarding',
+        name: 'auth.onboarding',
+        component: () => import('pages/Auth/Onboarding'),
+      },
+      {
+        path: 'waitlisted',
+        name: 'auth.waitlisted',
+        component: () => import('pages/Auth/Waitlisted'),
       },
     ],
   },

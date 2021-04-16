@@ -3103,6 +3103,11 @@ deepmerge@^1.5.2:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-1.5.2.tgz#10499d868844cdad4fee0842df8c7f6f0c95a753"
   integrity sha512-95k0GDqvBjZavkuvzx/YqVLv/6YYa17fz6ILMSf7neqQITCPbnfEnQvEgMPNjH4kgobe7+WIL0yJEHku+H3qtQ==
 
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
+
 default-gateway@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/default-gateway/-/default-gateway-4.2.0.tgz#167104c7500c2115f6dd69b0a536bb8ed720552b"
@@ -5360,6 +5365,11 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+libphonenumber-js@^1.9.16:
+  version "1.9.16"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.9.16.tgz#84fcadf834a1e4234dab3399b5798cf8ff809683"
+  integrity sha512-PaHT7nTtnejZ0HHekAaA0olv6BUTKZGtKM4SCQS0yE3XjFuVo/tjePMHUAr32FKwIZfyPky1ExMUuaiBAUmV6w==
 
 lie@~3.3.0:
   version "3.3.0"
@@ -7638,6 +7648,11 @@ shell-quote@^1.6.1:
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
   integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
 
+shvl@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/shvl/-/shvl-2.0.3.tgz#eb4bd37644f5684bba1fc52c3010c96fb5e6afd1"
+  integrity sha512-V7C6S9Hlol6SzOJPnQ7qzOVEWUQImt3BNmmzh40wObhla3XOYMe4gGiYzLrJd5TFa+cI2f9LKIRJTTKZSTbWgw==
+
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.3.tgz#a1410c2edd8f077b08b4e253c8eacfcaf057461c"
@@ -8670,10 +8685,23 @@ vue@2.6.12:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
 
+vuex-persistedstate@3:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/vuex-persistedstate/-/vuex-persistedstate-3.2.0.tgz#41d3ea304404769ac653ec020de80c95ce16243d"
+  integrity sha512-1Q4zV9cNaJtl59jN6rXbndemEtXKywZr0OFZnqgpYdwvdyy+64KNsEltKldQW+i03st5LuDwHsdOEevXIZUgdg==
+  dependencies:
+    deepmerge "^4.2.2"
+    shvl "^2.0.2"
+
 vuex@3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.6.0.tgz#95efa56a58f7607c135b053350833a09e01aa813"
   integrity sha512-W74OO2vCJPs9/YjNjW8lLbj+jzT24waTo2KShI8jLvJW8OaIkgb3wuAMA7D+ZiUxDOx3ubwSZTaJBip9G8a3aQ==
+
+vuex@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.6.2.tgz#236bc086a870c3ae79946f107f16de59d5895e71"
+  integrity sha512-ETW44IqCgBpVomy520DT5jf8n0zoCac+sxWnn+hMe/CzaSejb/eVw2YToiXYX+Ex/AuHHia28vWTq4goAexFbw==
 
 watchpack-chokidar2@^2.0.1:
   version "2.0.1"
