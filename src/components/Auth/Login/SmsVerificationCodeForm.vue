@@ -1,6 +1,5 @@
 <template>
   <q-form
-    class="q-gutter-md"
     @submit="$emit('submit', smsVerificationCode)"
   >
     <div class="login-form-top-text">
@@ -16,10 +15,25 @@
       :readonly="busy"
       mask="####"
       autofocus
+      :hint="hint"
       color="secondary"
+      input-style="text-align: center"
+      class="q-mt-md"
     />
 
-    <div class="text-center">
+    <div class="text-center q-mt-0">
+      <q-btn
+        label="Didn't receive it? Tap to get via call"
+        flat
+        unelevated
+        dense
+        no-caps
+        size="sm"
+        @click="$emit('get-via-call')"
+      />
+    </div>
+
+    <div class="text-center q-mt-md">
       <q-spinner
         v-if="loading"
         color="secondary"
@@ -54,11 +68,26 @@ export default {
       type: Boolean,
       default: false,
     },
+    attemptsRemaining: {
+      type: Number,
+      default: null,
+      required: false,
+    },
   },
   data () {
     return {
       smsVerificationCode: '',
     }
+  },
+  computed: {
+    hint () {
+      const attemptsRemaining = this.attemptsRemaining
+      if (attemptsRemaining === null) {
+        return null
+      }
+
+      return `Attempts remaining ${attemptsRemaining}`
+    },
   },
 }
 </script>

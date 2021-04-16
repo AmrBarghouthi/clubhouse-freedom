@@ -33,7 +33,7 @@
             class="q-ml-sm"
             size="md"
           >
-            <img :src="authData.user_profile.photo_url">
+            <img :src="profilePhotoUrl">
           </q-avatar>
         </div>
       </q-toolbar>
@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'MainLayout',
   data () {
@@ -54,12 +56,21 @@ export default {
       authData: null,
     }
   },
-  created () {
-    this.authData = JSON.parse(localStorage.getItem('authData'))
-
-    if (this.authData === null) {
-      this.$router.push({ name: 'auth.login' })
-    }
+  computed: {
+    ...mapGetters({
+      signUpStage: 'auth/signUpStage',
+      profilePhotoUrl: 'auth/profilePhotoUrl',
+    }),
+  },
+  watch: {
+    signUpStage: {
+      immediate: true,
+      handler (newVal) {
+        if (newVal !== 'COMPLETED') {
+          this.$router.push({ name: 'auth.login' })
+        }
+      },
+    },
   },
 }
 </script>

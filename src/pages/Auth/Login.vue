@@ -1,57 +1,23 @@
 <template>
   <div class="bg-alabaster q-mx-auto centered">
     <PhoneNumberForm
-      v-if="!isAwaitingSms"
+      v-show="!canEnterSmsVerificationCode"
       style="min-width: 320px"
       class="q-mx-auto"
       :busy="state.isBusy"
       :loading="state.isBusy"
-      @submit="signIn($event)"
+      @submit="signInGetSms($event)"
     />
     <SmsVerificationCodeForm
-      v-else
+      v-if="canEnterSmsVerificationCode"
       style="min-width: 320px"
       class="q-mx-auto"
       :busy="state.isBusy"
       :loading="state.isBusy"
+      :attempts-remaining="numberOfSmsVerificationAttemptsRemaining"
+      @submit="signInComplete"
+      @get-via-call="signInGetCall"
     />
-    <!-- <q-form
-      class="q-gutter-md"
-      @submit="nextPressed"
-      @reset="backPressed"
-    >
-      <q-input
-        v-model="number"
-        filled
-        label="Your phone number"
-        hint="+962796555666"
-        lazy-rules
-        :disable="smsSent"
-        :rules="[val => (val && val.length > 0) || 'Please type your phone number']"
-      />
-      <q-input
-        v-if="smsSent"
-        v-model="code"
-        filled
-        label="4 Digit Code"
-      />
-      <div>
-        <q-btn
-          v-if="smsSent"
-          label="Back"
-          type="reset"
-          color="primary"
-          flat
-          class="float-left"
-        />
-        <q-btn
-          label="Next"
-          type="submit"
-          color="primary"
-          class="float-right"
-        />
-      </div>
-    </q-form> -->
   </div>
 </template>
 
@@ -62,7 +28,7 @@ import SmsVerificationCodeForm from 'components/Auth/Login/SmsVerificationCodeFo
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'LoginPage',
+  name: 'AuthLoginPage',
   components: {
     PhoneNumberForm,
     SmsVerificationCodeForm,
@@ -72,21 +38,59 @@ export default {
       state: {
         isBusy: false,
       },
+      phoneNumber: '',
     }
   },
   computed: {
     ...mapGetters({
-      isAwaitingSms: 'auth/getIsAwaitingSmsVerificationCode',
+      canEnterSmsVerificationCode: 'auth/canEnterSmsVerificationCode',
+      numberOfSmsVerificationAttemptsRemaining: 'auth/numberOfSmsVerificationAttemptsRemaining',
     }),
+  },
+  watch: {
+    numberOfSmsVerificationAttemptsRemaining: {
+      immediate: true,
+      handler (newVal) {
+        if (newVal === 0) {
+          this.$q.notify({
+            message: 'Too many varification attempts. You may use a different number of try again.',
+            color: 'negative',
+            position: 'top',
+          })
+          this.signInRestart()
+        }
+      },
+    },
   },
   methods: {
     ...mapActions({
       startPhoneNumberAuth: 'auth/startPhoneNumberAuth',
+      callPhoneNumberAuth: 'auth/callPhoneNumberAuth',
+      restartAuthenticaton: 'auth/restartAuthenticaton',
+      completePhoneNumberAuth: 'auth/completePhoneNumberAuth',
     }),
-    signIn (phoneNumber) {
-      console.log(1)
+    signInGetSms (phoneNumber) {
+      this.phoneNumber = phoneNumber
       this.state.isBusy = true
-      this.startPhoneNumberAuth(phoneNumber)
+      this.startPhoneNumberAuth({ phoneNumber })
+        .finally(() => this.state.isBusy = false)
+    },
+    signInGetCall () {
+      const phoneNumber = this.phoneNumber
+      this.state.isBusy = true
+      this.callPhoneNumberAuth({ phoneNumber })
+        .finally(() => this.state.isBusy = false)
+    },
+    signInRestart () {
+      this.restartAuthenticaton()
+    },
+    signInComplete (verificationCode) {
+      this.state.isBusy = true
+      const payload = {
+        phoneNumber: this.phoneNumber,
+        verificationCode,
+      }
+      this.completePhoneNumberAuth(payload)
         .finally(() => this.state.isBusy = false)
     },
   },

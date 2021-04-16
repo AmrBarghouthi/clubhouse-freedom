@@ -57,30 +57,23 @@
 </template>
 
 <script>
-import ajax from 'src/ajax'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
-  data () {
-    return {
-      channels: [],
-    }
+  computed: {
+    ...mapGetters('channels', {
+      channels: 'channels',
+    }),
   },
   mounted () {
     this.fetchChannles()
   },
   methods: {
+    ...mapActions('channels', {
+      getChannels: 'getChannels',
+    }),
     async fetchChannles () {
-      const authData = JSON.parse(localStorage.getItem('authData'))
-      const url = 'get_channels'
-      const options = {
-        headers: {
-          Authorization: `Token ${authData.auth_token}`,
-          'CH-UserID': authData.user_profile.user_id,
-        },
-      }
-
-      const response = await ajax.get(url, options)
-
-      this.channels = response.data.channels
+      this.getChannels()
     },
   },
 }

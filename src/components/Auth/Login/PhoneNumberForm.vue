@@ -58,7 +58,7 @@ export default {
   },
   data () {
     return {
-      phoneNumber: '+962785791553',
+      phoneNumber: '+1',
     }
   },
   computed: {
