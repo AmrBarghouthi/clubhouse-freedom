@@ -6,7 +6,7 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: (to, from, next) => {
-      const signUpStage = store.getters['authsignUp/Stage']
+      const signUpStage = store.getters['auth/signUpStage']
       if (signUpStage !== 'COMPLETED') {
         next({ name: 'auth.login' })
       }
