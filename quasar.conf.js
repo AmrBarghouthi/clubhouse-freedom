@@ -68,6 +68,8 @@ module.exports = function (/* ctx */) {
       chainWebpack (chain) {
         chain.plugin('eslint-webpack-plugin')
           .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
+          .end()
+          .externals({"agora-electron-sdk": "commonjs2 agora-electron-sdk"})
       },
     },
 
