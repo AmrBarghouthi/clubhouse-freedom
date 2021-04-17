@@ -9,7 +9,7 @@
       </div>
       <div class="users-grid">
         <div
-          v-for="speaker in speakers"
+          v-for="speaker in usersCategorized.speakers"
           :key="speaker.user_id"
           class="text-center"
         >
@@ -41,7 +41,7 @@
       </div>
       <div class="users-grid">
         <div
-          v-for="user in followedBySpeakers"
+          v-for="user in usersCategorized.followedBySpeakers"
           :key="user.user_id"
           class="text-center"
         >
@@ -62,7 +62,7 @@
       </div>
       <div class="users-grid">
         <div
-          v-for="user in others"
+          v-for="user in usersCategorized.others"
           :key="user.user_id"
           class="text-center"
         >
@@ -112,8 +112,9 @@
 </template>
 
 <script>
-import ajax from 'src/ajax'
-import { mapGetters } from 'vuex'
+import _ from 'lodash'
+import chAxios from 'src/ajax'
+import AgoraRtcEngine from 'agora-electron-sdk'
 
 export default {
   name: 'PageRoom',
@@ -124,86 +125,90 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth',{
-      userId: 'userId',
-      authToken: 'authToken',
-    }),
-    speakers () {
-      return this.roomInfo.users.filter(user => user.is_speaker)
-    },
-    followedBySpeakers () {
-      return this.roomInfo.users.filter(user => {
-        return !user.is_speaker && user.is_followed_by_speaker
-      })
-    },
-    others () {
-      return this.roomInfo.users.filter(user => {
-        return !user.is_speaker && !user.is_followed_by_speaker
+    userId () { return this.$store.getters['auth/userId'] },
+    authToken () { return this.$store.getters['auth/authToken'] },
+    usersCategorized () {
+      return _.groupBy(this.roomInfo.users || [], (user) => {
+        const isSpeaker = user.is_speaker
+        const isFollowedBySpeakers = user.is_followed_by_speaker && !isSpeaker
+
+        if (isSpeaker) return 'speakers'
+        if (isFollowedBySpeakers) return 'followedBySpeakers'
+        return 'others'
       })
     },
   },
   created () {
+    const agoraAppId = '938de3e8055e42b281bb8c6f69c21f78'
+    this.rtcEngine = new AgoraRtcEngine()
+    this.rtcEngine.initialize(agoraAppId, 0xFFFFFFFE)
+    this.rtcEngine.disableVideo()
     this.joinRoom()
+  },
+  beforeDestroy () {
+    this.rtcEngine.release()
   },
   methods: {
     joinRoom () {
-      const roomCode = this.$route.params.roomCode
       const url = 'join_channel'
-      const data = {
-        channel: roomCode,
-      }
-      const headers = {
-        'Authorization': `Token ${this.authToken}`,
-        'CH-UserID': this.userId,
-      }
-      ajax.post(url, data, { headers })
+      const data = { channel: this.$route.params.roomCode }
+      const headers = { 'Authorization': `Token ${this.authToken}`, 'CH-UserID': this.userId }
+
+      chAxios
+        .post(url, data, { headers })
         .then(res => {
           this.roomInfo = res.data
-          this.listenToChat()
-          console.log({res})
+          this.joinRoomAgora()
         })
-        .catch(err => {
-          console.log({err})
+        .catch(() => {
+          this.showFailedToJoinNotification()
+          this.leaveRoomClubhouse()
           this.$router.push({ name: 'index' })
         })
     },
-    async listenToChat () {
+    async joinRoomAgora () {
       const token = this.roomInfo.token
       const channel = this.roomInfo.channel
       const info = ''
       const uid = this.userId
 
-      this.$rtcEngine.enableAudioVolumeIndication(500, 1, false)
+      const joinChannelReturnCode = await this.rtcEngine.joinChannel(token, channel, info, uid)
 
-      const callback =  (speakers) => this.speakingNowInfo = speakers
+      if (joinChannelReturnCode < 0 ) {
+        this.showFailedToJoinNotification()
+        this.leaveRoomClubhouse()
+        this.$router.push({ name: 'index' })
+      }
+      this.rtcEngine.enableAudioVolumeIndication(200, 3, false)
 
-      this.$rtcEngine.on('groupAudioVolumeIndication', callback)
-
-      await this.$rtcEngine.joinChannel(token, channel, info, uid)
-
+      const callback = speakers => {
+        if (_.find(speakers, speaker => speaker.uid === 0)) return
+        this.speakingNowInfo = speakers
+      }
+      this.rtcEngine.on('groupAudioVolumeIndication', callback)
     },
-    leaveRoom () {
-      const roomCode = this.$route.params.roomCode
+    async leaveRoom () {
+      await this.leaveRoomAgora()
+      await this.leaveRoomClubhouse()
+      this.$router.push({ name: 'index' })
+    },
+    async leaveRoomAgora () {
+      return await this.rtcEngine.leaveChannel()
+    },
+    async leaveRoomClubhouse () {
       const url = 'leave_channel'
-      const data = {
-        channel: roomCode,
-        channel_id: null,
-      }
-      const headers = {
-        'Authorization': `Token ${this.authToken}`,
-        'CH-UserID': this.userId,
-      }
-      this.$rtcEngine.leaveChannel()
-      ajax.post(url, data, { headers })
-        .then(res => {
-          console.log({res})
-        })
-        .catch(err => {
-          console.log({err})
-        })
-        .finally(() => {
-          this.$router.push({ name: 'index' })
-        })
+      const data = { channel: this.$route.params.roomCode, channel_id: null }
+      const headers = { 'Authorization': `Token ${this.authToken}`, 'CH-UserID': this.userId }
+
+      await chAxios.post(url, data, { headers })
+    },
+    showFailedToJoinNotification () {
+      this.$q.notify({
+        type: 'negative',
+        message: 'An error occured while joing the room.',
+        position: 'top',
+        timeout: 2500,
+      })
     },
     isSpeakingNow (userId) {
       return this.speakingNowInfo.find(user => user.uid === userId) !== undefined
