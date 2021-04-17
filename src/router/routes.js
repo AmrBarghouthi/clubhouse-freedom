@@ -1,17 +1,7 @@
-import store from 'src/store'
-
-
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: (to, from, next) => {
-      const signUpStage = store.getters['auth/signUpStage']
-      if (signUpStage !== 'COMPLETED') {
-        next({ name: 'auth.login' })
-      }
-      next()
-    },
     children: [
       {
         path: '',
@@ -22,6 +12,19 @@ const routes = [
         path: 'room/:roomCode',
         name: 'room',
         component: () => import('pages/Room.vue'),
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        redirect: { name: 'profile.index' },
+        component: () => import('pages/Profile/ProfileBase'),
+        children: [
+          {
+            path: '',
+            name: 'profile.index',
+            component: () => import ('pages/Profile/ProfileIndex'),
+          },
+        ],
       },
     ],
   },
@@ -43,6 +46,11 @@ const routes = [
         path: 'waitlisted',
         name: 'auth.waitlisted',
         component: () => import('pages/Auth/Waitlisted'),
+      },
+      {
+        path: 'blocked',
+        name: 'auth.blocked',
+        component: () => import('pages/Auth/Blocked'),
       },
     ],
   },

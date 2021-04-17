@@ -1,30 +1,43 @@
 <template>
-  <div class="q-mx-auto centered">
-    <PhoneNumberForm
-      v-show="!canEnterSmsVerificationCode"
-      class="q-mx-auto full-width"
-      :busy="state.isBusy"
-      :loading="state.isBusy"
-      @submit="signInGetSms($event)"
+  <div>
+    <q-btn
+      v-if="stage === 'AWAITING_VERIFICATION_CODE'"
+      icon="chevron_left"
+      class="absolute"
+      flat
+      :ripple="false"
+      dense
+      round
+      fab
+      @click="signInRestart"
     />
-    <SmsVerificationCodeForm
-      v-if="canEnterSmsVerificationCode"
-      class="q-mx-auto full-width"
-      :busy="state.isBusy"
-      :loading="state.isBusy"
-      :attempts-remaining="numberOfSmsVerificationAttemptsRemaining"
-      @submit="signInComplete"
-      @resend-sms="signInResendSms"
-      @get-via-call="signInGetCall"
-    />
+    <div class="q-mx-auto q-px-md centered">
+      <PhoneNumberForm
+        v-show="stage === 'NEW'"
+        class="q-mx-auto full-width"
+        :busy="state.isBusy"
+        :loading="state.isBusy"
+        @submit="signInGetSms($event)"
+      />
+      <SmsVerificationCodeForm
+        v-show="stage === 'AWAITING_VERIFICATION_CODE'"
+        class="q-mx-auto full-width"
+        :busy="state.isBusy"
+        :loading="state.isBusy"
+        :attempts-remaining="numberOfSmsVerificationAttemptsRemaining"
+        @submit="signInComplete"
+        @resend-sms="signInResendSms"
+        @get-via-call="signInGetCall"
+      />
+    </div>
   </div>
+
 </template>
 
 <script>
-
+import chAxios from 'src/ajax'
 import PhoneNumberForm from 'components/Auth/Login/PhoneNumberForm'
 import SmsVerificationCodeForm from 'components/Auth/Login/SmsVerificationCodeForm'
-import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'AuthLoginPage',
@@ -38,68 +51,93 @@ export default {
         isBusy: false,
       },
       phoneNumber: '',
+      verificationCode: '',
     }
   },
   computed: {
-    ...mapGetters({
-      canEnterSmsVerificationCode: 'auth/canEnterSmsVerificationCode',
-      numberOfSmsVerificationAttemptsRemaining: 'auth/numberOfSmsVerificationAttemptsRemaining',
-    }),
+    hasRequstedSmsVerificationCode () {
+      return this.$store.getters['auth/hasRequstedSmsVerificationCode']
+    },
+    numberOfSmsVerificationAttemptsRemaining () {
+      return this.$store.getters['auth/numberOfSmsVerificationAttemptsRemaining']
+    },
+    isVerified () {
+      return this.$store.getters['auth/isVerified']
+    },
+    stage () {
+      if (this.hasRequstedSmsVerificationCode && this.numberOfSmsVerificationAttemptsRemaining !== 0) {
+        return 'AWAITING_VERIFICATION_CODE'
+      }
+      else {
+        return 'NEW'
+      }
+    },
   },
   watch: {
-    numberOfSmsVerificationAttemptsRemaining: {
-      immediate: true,
-      handler (newVal) {
-        if (newVal === 0) {
-          this.$q.notify({
-            message: 'Too many varification attempts. You may use a different number of try again.',
-            color: 'negative',
-            position: 'top',
-          })
-          this.signInRestart()
-        }
-      },
+    numberOfSmsVerificationAttemptsRemaining (newVal) {
+      if (newVal !== 0) {
+        return
+      }
+
+      this.signInRestart()
+
+      this.$q.notify({
+        message: 'Too many varification attempts. You may use a different number of try again.',
+        color: 'negative',
+        position: 'top',
+      })
+    },
+    isVerified (newVal) {
+      if (newVal) {
+        this.$router.push({ name: 'index' })
+      }
     },
   },
   mounted () {
-    this.restartAuthenticaton()
+    this.signInRestart()
+    if (this.$route.query.isBlocked) {
+      this.$router.replace({ query: { isBlocked: false } })
+      this.$q.notify({
+        message: 'This account is blocked.',
+        color: 'negative',
+        position: 'top',
+      })
+    }
   },
   methods: {
-    ...mapActions({
-      startPhoneNumberAuth: 'auth/startPhoneNumberAuth',
-      resendPhoneNumberAuth: 'auth/resendPhoneNumberAuth',
-      callPhoneNumberAuth: 'auth/callPhoneNumberAuth',
-      restartAuthenticaton: 'auth/restartAuthenticaton',
-      completePhoneNumberAuth: 'auth/completePhoneNumberAuth',
-    }),
     signInGetSms (phoneNumber) {
       this.phoneNumber = phoneNumber
       this.state.isBusy = true
-      this.startPhoneNumberAuth({ phoneNumber })
+      return chAxios
+        .post('start_phone_number_auth', { phone_number: phoneNumber })
+        .then(res => this.$store.commit('auth/UPDATE_SIGN_IN_ATTEMPT_STATE', res.data))
         .finally(() => this.state.isBusy = false)
     },
     signInResendSms () {
-      const phoneNumber = this.phoneNumber
       this.state.isBusy = true
-      this.resendPhoneNumberAuth({ phoneNumber })
+      return chAxios
+        .post('resend_phone_number_auth', { phone_number: this.phoneNumber })
         .finally(() => this.state.isBusy = false)
     },
     signInGetCall () {
-      const phoneNumber = this.phoneNumber
       this.state.isBusy = true
-      this.callPhoneNumberAuth({ phoneNumber })
+      return chAxios
+        .post('call_phone_number_auth', { phone_number: this.phoneNumber })
         .finally(() => this.state.isBusy = false)
     },
     signInRestart () {
-      this.restartAuthenticaton()
+      this.$store.commit('auth/RESET')
+      this.verificationCode = ''
     },
     signInComplete (verificationCode) {
+      this.verificationCode = verificationCode
       this.state.isBusy = true
-      const payload = {
-        phoneNumber: this.phoneNumber,
-        verificationCode,
-      }
-      this.completePhoneNumberAuth(payload)
+      return chAxios
+        .post('complete_phone_number_auth', {
+          phone_number: this.phoneNumber,
+          verification_code: verificationCode,
+        })
+        .then(res => this.$store.commit('auth/UPDATE_COMPLETE_SIGN_IN_ATTEMPT_STATE', res.data))
         .finally(() => this.state.isBusy = false)
     },
   },

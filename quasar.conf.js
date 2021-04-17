@@ -22,6 +22,8 @@ module.exports = function (/* ctx */) {
     boot: [
       'paints.js',
       'initializeAgoraRtcEngine',
+      'registerIsBlockedWatcher',
+      'registerShouldAuthenticateWatcher',
     ],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -71,6 +73,7 @@ module.exports = function (/* ctx */) {
           .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
           .end()
           .externals({"agora-electron-sdk": "commonjs2 agora-electron-sdk"})
+
       },
     },
 

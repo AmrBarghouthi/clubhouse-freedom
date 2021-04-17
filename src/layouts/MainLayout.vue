@@ -29,13 +29,20 @@
             size="md"
             outline
           />
-          <q-avatar
-            class="q-ml-sm bg-primary smooth-corners"
-            size="md"
-            square
+          <q-btn
+            padding="none"
+            flat
+            class="smooth-corners q-ml-sm"
           >
-            <img :src="profilePhotoUrl">
-          </q-avatar>
+            <q-avatar
+              size="md"
+              square
+              @click="goToProfile"
+            >
+              <img :src="profilePhotoUrl">
+            </q-avatar>
+          </q-btn>
+
         </div>
       </q-toolbar>
     </q-header>
@@ -48,29 +55,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'MainLayout',
-  data () {
-    return {
-      authData: null,
-    }
-  },
   computed: {
-    ...mapGetters({
-      signUpStage: 'auth/signUpStage',
-      profilePhotoUrl: 'auth/profilePhotoUrl',
-    }),
+    profilePhotoUrl () {
+      return this.$store.getters['auth/profilePhotoUrl']
+    },
   },
-  watch: {
-    signUpStage: {
-      immediate: true,
-      handler (newVal) {
-        if (newVal !== 'COMPLETED') {
-          this.$router.push({ name: 'auth.login' })
-        }
-      },
+  methods: {
+    goToProfile () {
+      this.$router.push({ name: 'profile' })
     },
   },
 }
