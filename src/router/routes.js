@@ -18,6 +18,11 @@ const routes = [
         name: 'index',
         component: () => import('pages/Index.vue'),
       },
+      {
+        path: 'room/:roomCode',
+        name: 'room',
+        component: () => import('pages/Room.vue'),
+      },
     ],
   },
   {

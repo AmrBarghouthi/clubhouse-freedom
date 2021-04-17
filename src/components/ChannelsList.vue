@@ -8,6 +8,7 @@
         v-ripple
         clickable
         class="q-my-sm bg-white rounded-base shadow-down-on-alabaster-1"
+        @click="enterRoom(channel.channel)"
       >
         <q-item-section>
           <q-item-label dir="auto">{{ channel.topic }}</q-item-label>
@@ -76,6 +77,9 @@ export default {
     }),
     async fetchChannles () {
       this.getChannels()
+    },
+    enterRoom (roomCode) {
+      this.$router.push({ name: 'room', params: { roomCode: roomCode } })
     },
   },
 }
