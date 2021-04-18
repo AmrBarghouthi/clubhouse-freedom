@@ -1,4 +1,7 @@
 import Axios from 'axios'
+import _ from 'lodash'
+import { Notify } from 'quasar'
+import router from 'src/router'
 
 const ajax = Axios.create({
   baseURL: 'https://www.clubhouseapi.com/api',
@@ -11,6 +14,30 @@ const ajax = Axios.create({
     'Accept':'application/json',
     'CH-DeviceId':'6B51095C-D0EB-489D-AC84-58B03CE4E481',
   },
+})
+
+const showNetworkErrorNotification =  () => {
+  Notify.create({
+    message: 'Network error',
+    color: 'negative',
+    position: 'top',
+    timeout: 2500,
+  })
+}
+const showNetworkErrorNotificationThrottled = _.throttle(showNetworkErrorNotification, 5000)
+
+ajax.interceptors.response.use((response) => {
+  return response
+}, (error) => {
+  if (_.get(error, 'message') === 'Network Error') {
+    showNetworkErrorNotificationThrottled()
+  }
+
+  if (_.get(error, 'response.status') === 401) {
+    router.push({ name: 'auth.login' })
+  }
+
+  return Promise.reject(error)
 })
 
 export default ajax
