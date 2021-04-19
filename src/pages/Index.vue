@@ -1,18 +1,67 @@
 <template>
-  <q-page class="bg-alabaster center-it">
-    <RoomsList
-      :rooms="rooms"
-      :busy="state.isBusy"
-      class="q-mx-md flex-1"
-      @roomclicked="roomClickedHandler"
-    />
-    <q-page-sticky
-      position="bottom"
-      :offset="[18, 18]"
-    >
-      <StartRoomBtn />
-    </q-page-sticky>
-  </q-page>
+  <q-layout
+    view="hHh lpR fFf"
+    class="bg-alabaster"
+  >
+    <q-header class="bg-alabaster text-black">
+      <q-toolbar>
+        <q-btn
+          flat
+          round
+          icon="search"
+          size="md"
+        />
+        <q-space />
+        <div>
+          <q-btn
+            flat
+            round
+            icon="o_date_range"
+            size="md"
+            outline
+          />
+          <q-btn
+            flat
+            round
+            icon="o_notifications"
+            size="md"
+            outline
+          />
+          <q-btn
+            padding="none"
+            flat
+            class="smooth-corners q-ml-sm"
+          >
+            <q-avatar
+              size="md"
+              square
+              @click="goToProfile"
+            >
+              <img :src="$store.getters['auth/profilePhotoUrl']">
+            </q-avatar>
+          </q-btn>
+
+        </div>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <q-page class="bg-alabaster center-it">
+        <RoomsList
+          :rooms="rooms"
+          :busy="state.isBusy"
+          class="q-mx-md flex-1"
+          @roomclicked="roomClickedHandler"
+        />
+        <q-page-sticky
+          position="bottom"
+          :offset="[18, 18]"
+        >
+          <StartRoomBtn />
+        </q-page-sticky>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -58,6 +107,9 @@ export default {
     },
     roomClickedHandler (event) {
       this.enterRoom(event.roomCode)
+    },
+    goToProfile () {
+      this.$router.push({ name: 'profile' })
     },
   },
 }
