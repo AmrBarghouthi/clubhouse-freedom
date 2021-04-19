@@ -10,14 +10,7 @@
       position="bottom"
       :offset="[18, 18]"
     >
-      <q-btn
-        icon="add"
-        color="primary"
-        rounded
-        no-caps
-      >
-        Start a room
-      </q-btn>
+      <StartRoomBtn />
     </q-page-sticky>
   </q-page>
 </template>
@@ -25,12 +18,15 @@
 <script>
 import _ from 'lodash'
 import chAxios from 'src/ajax'
+
 import RoomsList from 'components/Index/RoomsList'
+import StartRoomBtn from 'components/Index/StartRoomBtn'
 
 export default {
   name: 'PageIndex',
   components: {
     RoomsList,
+    StartRoomBtn,
   },
   data () {
     return {
