@@ -59,6 +59,15 @@
         >
           <StartRoomBtn />
         </q-page-sticky>
+        <q-page-sticky
+          position="bottom-left"
+          :offset="[18, 18]"
+        >
+          <RefreshRoomsListBtn
+            :busy="state.isBusy"
+            @click="getRooms"
+          />
+        </q-page-sticky>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -68,12 +77,14 @@
 import _ from 'lodash'
 import chAxios from 'src/ajax'
 
+import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
 import RoomsList from 'components/Index/RoomsList'
 import StartRoomBtn from 'components/Index/StartRoomBtn'
 
 export default {
   name: 'PageIndex',
   components: {
+    RefreshRoomsListBtn,
     RoomsList,
     StartRoomBtn,
   },
