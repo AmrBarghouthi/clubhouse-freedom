@@ -6,7 +6,7 @@
     <div>No rooms for you.</div>
     <div>Something is wrong in the spacetime continuum!</div>
   </div>
-  <q-list v-else>
+  <q-list v-else class="full-width">
     <div
       v-for="room in rooms"
       :key="room.channel_id"

@@ -46,7 +46,7 @@
     </q-header>
 
     <q-page-container>
-      <q-page class="bg-alabaster center-it">
+      <q-page class="bg-alabaster center-it q-mx-md">
         <RoomsList
           :rooms="rooms"
           :busy="state.isBusy"
