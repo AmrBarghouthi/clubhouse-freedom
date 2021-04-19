@@ -1,5 +1,12 @@
 <template>
-  <q-list>
+  <div
+    v-if="rooms.length === 0 && !busy"
+    class="no-rooms-text"
+  >
+    <div>No rooms for you.</div>
+    <div>Something is wrong in the spacetime continuum!</div>
+  </div>
+  <q-list v-else>
     <div
       v-for="room in rooms"
       :key="room.channel_id"
@@ -8,7 +15,7 @@
         v-ripple
         clickable
         class="q-my-sm bg-white rounded-base shadow-down-on-alabaster-1"
-        @click="enterRoom(room.channel)"
+        @click="$emit('roomclicked', { roomCode: room.channel })"
       >
         <q-item-section>
           <q-item-label dir="auto">{{ room.topic }}</q-item-label>
@@ -59,32 +66,16 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import chAxios from 'src/ajax'
-
 export default {
-  data () {
-    return {
-      rooms: [],
-    }
-  },
-  mounted () {
-    this.getRooms()
-  },
-  methods: {
-    async getRooms () {
-      const headers = {
-        Authorization: `Token ${this.$store.getters['auth/authToken']}`,
-        'CH-UserID': this.$store.getters['auth/userId'],
-      }
-
-      const res = await chAxios.get('get_channels', { headers })
-
-      if (_.has(res, 'data.channels')) this.rooms = res.data.channels
-
+  name: 'IndexRoomsList',
+  props: {
+    rooms: {
+      type: Array,
+      required: true,
     },
-    enterRoom (roomCode) {
-      this.$router.push({ name: 'room', params: { roomCode: roomCode } })
+    busy: {
+      type: Boolean,
+      default: false,
     },
   },
 }
@@ -104,5 +95,11 @@ export default {
 .rooms-list-avatar-second {
   position: absolute;
   transform: translate(-50%, 50%);
+}
+
+.no-rooms-text {
+  color: gray;
+  font-weight: 700;
+  text-align: center;
 }
 </style>
