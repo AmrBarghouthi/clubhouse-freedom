@@ -3,8 +3,6 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import auth from './auth'
-import channels from './channels'
-
 
 Vue.use(Vuex)
 
@@ -23,7 +21,6 @@ export default new Vuex.Store({
   },
   modules: {
     auth,
-    channels,
   },
   plugins: [
     createPersistedState(),
