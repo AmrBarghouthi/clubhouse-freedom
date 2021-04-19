@@ -200,86 +200,73 @@ export default {
         authKey: this.roomInfo.pubnub_token
       };
       const pubnub = new Pubnub(pnConfig);
+      const vueComponent = this
       pubnub.addListener({
         // Messages
         message: function(m) {
-          console.log({pubnubMessage: m})
-          /*
-          const channelName = m.channel; // Channel on which the message was published
-          const channelGroup = m.subscription; // Channel group or wildcard subscription match (if exists)
-          const pubTT = m.timetoken; // Publish timetoken
-          const msg = m.message; // Message payload
-          const publisher = m.publisher; // Message publisher
-          */
+          switch (m.message.action){
+            case 'join_channel':
+              vueComponent.userJoindEvent(m.message.user_profile)
+              break
+            case 'leave_channel':
+              vueComponent.userLeftEvent(m.message.user_id)
+              break
+            case 'end_channel':
+              break
+            case 'invite_speaker':
+              break
+            default:
+              console.log({pubnubMessage: m})
+          }
+
         },
         // Presence
         presence: function(p) {
           console.log({pubnubPrsence: p})
-          /*
-          const action = p.action; // Can be join, leave, state-change, or timeout
-          const channelName = p.channel; // Channel to which the message belongs
-          const occupancy = p.occupancy; // Number of users subscribed to the channel
-          const state = p.state; // User state
-          const channelGroup = p.subscription; //  Channel group or wildcard subscription match, if any
-          const publishTime = p.timestamp; // Publish timetoken
-          const timetoken = p.timetoken; // Current timetoken
-          const uuid = p.uuid; // UUIDs of users who are subscribed to the channel
-          */
         },
         // Signals
         signal: function(s) {
           console.log({pubnubSignal: s})
-          /*
-          const channelName = s.channel; // Channel to which the signal belongs
-          const channelGroup = s.subscription; // Channel group or wildcard subscription match, if any
-          const pubTT = s.timetoken; // Publish timetoken
-          const msg = s.message; // Payload
-          const publisher = s.publisher; // Message publisher
-          */
         },
         objects: objectEvent => {
           console.log({pubnubObjects: objectEvent})
-          /*
-          const channel = objectEvent.channel; // Channel to which the event belongs
-          const channelGroup = objectEvent.subscription; // Channel group
-          const timetoken = objectEvent.timetoken; // Event timetoken
-          const publisher = objectEvent.publisher; // UUID that made the call
-          const event = objectEvent.event; // Name of the event that occurred
-          const type = objectEvent.type; // Type of the event that occurred
-          const data = objectEvent.data; // Data from the event that occurred
-          */
         },
         messageAction: function(ma) {
           console.log({pubnubMessageAction: ma})
-          /*
-          const channelName = ma.channel; // Channel to which the message belongs
-          const publisher = ma.publisher; // Message publisher
-          const event = ma.event; // Message action added or removed
-          const type = ma.data.type; // Message action type
-          const value = ma.data.value; // Message action value
-          const messageTimetoken = ma.data.messageTimetoken; // Timetoken of the original message
-          const actionTimetoken = ma.data.actionTimetoken; // Timetoken of the message action
-          */
         },
         status: function(s) {
           console.log({pubnubStatus: s})
-          /*
-          const affectedChannelGroups = s.affectedChannelGroups; // Array of channel groups affected in the operation
-          const affectedChannels = s.affectedChannels; // Array of channels affected in the operation
-          const category = s.category; // Returns PNConnectedCategory
-          const operation = s.operation; // Returns PNSubscribeOperation
-          const lastTimetoken = s.lastTimetoken; // Last timetoken used in the subscribe request (type long)
-          const currentTimetoken = s.currentTimetoken;
-          /* Current timetoken fetched in subscribe response,
-           * to be used in the next request (type long) */
-          //const subscribedChannels = s.subscribedChannels; // Array of all currently subscribed channels
-
         }
       });
       pubnub.subscribe({
         channels:['users.'+this.userId,'channel_user.'+this.roomInfo.channel+'.'+this.userId,'channel_all.'+this.roomInfo.channel]
       });
       this.pubnub = pubnub
+    },
+    userJoindEvent(profile) {
+      let notInRoom = true
+      for(let i=0;i<this.roomInfo.users.length;i++)
+      {
+        const user = this.roomInfo.users[i]
+        if(user.user_id == profile.user_id){
+          notInRoom = false
+        }
+      }
+      if(notInRoom)
+        this.roomInfo.users.push(profile)
+      console.log('user added')
+    },
+    userLeftEvent(userId)
+    {
+      console.log(`removing ${userId}`)
+      for(let i=0;i<this.roomInfo.users.length;i++)
+      {
+        const user = this.roomInfo.users[i]
+        if(user.user_id == userId){
+          this.roomInfo.users.splice(i, 1);
+          break
+        }
+      }
     },
     async leaveRoom() {
       await this.leaveRoomAgora();
