@@ -47,6 +47,13 @@
 
     <q-page-container>
       <q-page class="bg-alabaster center-it q-mx-md">
+        <EventsList
+          v-if="events.length"
+          :events="events"
+          :busy="state.isBusy"
+          class="q-mx-md q-mb-md flex-1"
+          @roomclicked="roomClickedHandler"
+        />
         <RoomsList
           :rooms="rooms"
           :busy="state.isBusy"
@@ -77,6 +84,7 @@
 import _ from 'lodash'
 import chAxios from 'src/ajax'
 
+import EventsList from 'components/Index/EventsList'
 import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
 import RoomsList from 'components/Index/RoomsList'
 import StartRoomBtn from 'components/Index/StartRoomBtn'
@@ -84,6 +92,7 @@ import StartRoomBtn from 'components/Index/StartRoomBtn'
 export default {
   name: 'PageIndex',
   components: {
+    EventsList,
     RefreshRoomsListBtn,
     RoomsList,
     StartRoomBtn,
@@ -91,6 +100,7 @@ export default {
   data () {
     return {
       rooms: [],
+      events: [],
       state: {
         isBusy: false,
       },
@@ -111,6 +121,7 @@ export default {
       this.state.isBusy = false
 
       if (_.has(res, 'data.channels')) this.rooms = res.data.channels
+      if (_.has(res, 'data.events')) this.events = res.data.events
 
     },
     enterRoom (roomCode) {
