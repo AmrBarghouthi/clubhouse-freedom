@@ -36,7 +36,7 @@
         >
           <RefreshRoomsListBtn
             :busy="state.isBusy"
-            @click="getRooms"
+            @click="getRoomsAndEvents"
           />
         </q-page-sticky>
       </q-page>
@@ -73,10 +73,10 @@ export default {
     }
   },
   created () {
-    this.getRooms()
+    this.getRoomsAndEvents()
   },
   methods: {
-    async getRooms () {
+    async getRoomsAndEvents () {
       const headers = {
         Authorization: `Token ${this.$store.getters['auth/authToken']}`,
         'CH-UserID': this.$store.getters['auth/userId'],
