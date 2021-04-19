@@ -22,20 +22,20 @@
           <div class="flex q-mt-sm q-gutter-md">
             <div class="rooms-list-avatars-container">
               <q-avatar
-                v-if="room.users.length > 0"
-                size="2.5rem"
-                class="rooms-list-avatar-first smooth-corners"
-                square
-              >
-                <img :src="room.users[0].photo_url">
-              </q-avatar>
-              <q-avatar
                 v-if="room.users.length > 1"
                 size="2.5rem"
                 class="rooms-list-avatar-second smooth-corners"
                 square
               >
                 <img :src="room.users[1].photo_url">
+              </q-avatar>
+              <q-avatar
+                v-if="room.users.length > 0"
+                size="2.5rem"
+                class="rooms-list-avatar-first smooth-corners"
+                square
+              >
+                <img :src="room.users[0].photo_url">
               </q-avatar>
             </div>
             <div>
@@ -88,13 +88,9 @@ export default {
   height: 3.75rem;
 }
 
-.rooms-list-avatar-first {
-  z-index: 1;
-}
-
 .rooms-list-avatar-second {
   position: absolute;
-  transform: translate(-50%, 50%);
+  transform: translate(50%, 50%);
 }
 
 .no-rooms-text {
