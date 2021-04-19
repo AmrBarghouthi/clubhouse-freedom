@@ -3,46 +3,10 @@
     view="hHh lpR fFf"
     class="bg-alabaster"
   >
-    <q-header class="bg-alabaster text-black">
-      <q-toolbar>
-        <q-btn
-          flat
-          round
-          icon="search"
-          size="md"
-        />
-        <q-space />
-        <div>
-          <q-btn
-            flat
-            round
-            icon="o_date_range"
-            size="md"
-            outline
-          />
-          <q-btn
-            flat
-            round
-            icon="o_notifications"
-            size="md"
-            outline
-          />
-          <q-btn
-            padding="none"
-            flat
-            class="smooth-corners q-ml-sm"
-          >
-            <q-avatar
-              size="md"
-              square
-              @click="goToProfile"
-            >
-              <img :src="$store.getters['auth/profilePhotoUrl']">
-            </q-avatar>
-          </q-btn>
-
-        </div>
-      </q-toolbar>
+    <q-header class="bg-alabaster text-black q-mx-sm">
+      <TopToolbar
+        @profilephotoclick="goToProfile"
+      />
     </q-header>
 
     <q-page-container>
@@ -88,6 +52,7 @@ import EventsList from 'components/Index/EventsList'
 import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
 import RoomsList from 'components/Index/RoomsList'
 import StartRoomBtn from 'components/Index/StartRoomBtn'
+import TopToolbar from 'components/Index/TopToolbar'
 
 export default {
   name: 'PageIndex',
@@ -96,6 +61,7 @@ export default {
     RefreshRoomsListBtn,
     RoomsList,
     StartRoomBtn,
+    TopToolbar,
   },
   data () {
     return {
