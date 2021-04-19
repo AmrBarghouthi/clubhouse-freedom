@@ -1,6 +1,6 @@
 <template>
   <q-page class="bg-alabaster">
-    <ChannelsList class="q-mx-md"/>
+    <RoomsList class="q-mx-md"/>
     <q-page-sticky
       position="bottom"
       :offset="[18, 18]"
@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import ChannelsList from 'components/ChannelsList'
+import RoomsList from 'components/Index/RoomsList'
 export default {
   name: 'PageIndex',
   components: {
-    ChannelsList,
+    RoomsList,
   },
 }
 </script>
