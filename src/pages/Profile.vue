@@ -151,7 +151,7 @@ import moment from 'moment'
 import { shell } from 'electron'
 
 import PageHeader from 'components/PageHeader'
-import SettingsBtn from 'components/ProfileIndex/SettingsBtn'
+import SettingsBtn from 'components/Profile/SettingsBtn'
 
 export default {
   name: 'ProfilePage',
