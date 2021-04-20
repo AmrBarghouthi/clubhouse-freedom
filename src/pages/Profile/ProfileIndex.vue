@@ -20,15 +20,15 @@
       <div class="flex q-mt-sm">
         <div class="q-mr-md">
           <span class="text-h6 text-weight-medium">{{ profile.num_followers }}</span>
-          <span>followers</span>
+          <span class="q-ml-xs">followers</span>
         </div>
         <div>
           <span class="text-h6 text-weight-medium">{{ profile.num_following }}</span>
-          <span>following</span>
+          <span class="q-ml-xs">following</span>
         </div>
       </div>
 
-      <div class="q-my-md">
+      <div class="q-my-md bio">
         {{profile.bio}}
       </div>
 
@@ -37,18 +37,23 @@
           v-if="profile.instagram"
           class="q-mr-lg"
         >
-          twitter: {{ profile.instagram }}
+          <q-icon name="fab fa-twitter" style="color: #00acee;" />
+          <span class="text-weight-medium q-ml-xs">{{ profile.twitter }}</span>
         </div>
         <div
           v-if="profile.twitter"
           class="q-mr-lg"
         >
-          instagram: {{ profile.twitter }}
+          <q-icon name="fab fa-instagram" style="color: #e95950;" />
+          <span class="text-weight-medium q-ml-xs">{{ profile.instagram }}</span>
         </div>
       </div>
 
-      <div class="q-mt-lg nominated-by-container">
-        <img :src="profile.invited_by_user_profile.photo_url" class="smooth-corners photo-sm q-mr-sm">
+      <div class="q-mt-xl nominated-by-container">
+        <img
+          :src="profile.invited_by_user_profile.photo_url"
+          class="smooth-corners photo-sm q-mr-sm"
+        >
         <div>
           <div class="text-grey-7">Joined {{ moment(profile.time_created).format('MMM D, YYYY') }}</div>
           <div class="text-grey-7">Nominated by <span class="text-weight-medium text-black">{{ profile.invited_by_user_profile.name }}</span></div>
@@ -61,12 +66,12 @@
       >
         Member of
       </div>
-      <div>
+      <div class="q-mt-sm">
         <div
           v-for="club in profile.clubs"
           :key="club.club_id"
         >
-          <img :src="club.photo_url" class="photo-sm q-mr-md">
+          <img :src="club.photo_url" class="photo-xs q-mr-md smooth-corners">
         </div>
       </div>
     </div>
@@ -98,7 +103,7 @@ export default {
   },
   data () {
     return {
-      profile: null,
+      profile: {},
     }
   },
   created () {
@@ -138,6 +143,15 @@ export default {
 .photo-sm {
   width: 2.7rem;
   height: 2.7rem;
+}
+
+.photo-xs {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.bio {
+  font-size: 0.825rem;
 }
 
 .nominated-by-container {

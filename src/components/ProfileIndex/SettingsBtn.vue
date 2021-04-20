@@ -1,10 +1,9 @@
 <template>
   <q-btn
-    icon="settings"
+    icon="tune"
     flat
     :ripple="false"
     round
-    size="lg"
     @click="$emit('click')"
   />
 </template>
