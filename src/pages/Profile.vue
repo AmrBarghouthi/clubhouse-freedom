@@ -130,7 +130,7 @@ import PageHeader from 'components/PageHeader'
 import SettingsBtn from 'components/ProfileIndex/SettingsBtn'
 
 export default {
-  name: 'ProfileIndexPage',
+  name: 'ProfilePage',
   components: {
     PageHeader,
     SettingsBtn,
@@ -142,7 +142,7 @@ export default {
     }
   },
   created () {
-    // this.getProfile()
+    this.getProfile()
   },
   methods: {
     moment,

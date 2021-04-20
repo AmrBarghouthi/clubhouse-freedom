@@ -17,15 +17,7 @@ const routes = [
       {
         path: 'profile',
         name: 'profile',
-        redirect: { name: 'profile.index' },
-        component: () => import('pages/Profile/ProfileBase'),
-        children: [
-          {
-            path: '',
-            name: 'profile.index',
-            component: () => import ('pages/Profile/ProfileIndex'),
-          },
-        ],
+        component: () => import('pages/Profile'),
       },
     ],
   },
