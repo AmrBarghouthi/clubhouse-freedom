@@ -43,37 +43,58 @@
             </div>
           </div>
 
-          <div class="q-my-md bio">
-            {{profile.bio}}
+          <div
+            v-if="profile.bio"
+            class="q-mt-md bio"
+          >
+            {{ profile.bio }}
           </div>
 
-          <div class="social-media-container">
+          <div class="social-media-container q-mt-md">
             <div
               v-if="profile.twitter"
               class="q-mr-lg cursor-pointer"
               @click="openLinkInBrowser(`https://twitter.com/${profile.twitter}`)"
             >
-              <q-icon name="fab fa-twitter" style="color: #00acee;" />
+              <q-icon
+                name="fab fa-twitter"
+                style="color: #00acee;"
+              />
               <span class="text-weight-medium q-ml-xs">{{ profile.twitter }}</span>
             </div>
             <div
               v-if="profile.instagram"
               class="q-mr-lg cursor-pointer"
-              @click="openLinkInBrowser(`https://twitter.com/${profile.instagram}/`)"
+              @click="openLinkInBrowser(`https://instagram.com/${profile.instagram}/`)"
             >
-              <q-icon name="fab fa-instagram" style="color: #e95950;" />
+              <q-icon
+                name="fab fa-instagram"
+                style="color: #e95950;"
+              />
               <span class="text-weight-medium q-ml-xs">{{ profile.instagram }}</span>
             </div>
           </div>
 
           <div class="q-mt-xl nominated-by-container">
             <img
+              v-if="profile.invited_by_user_profile"
               :src="profile.invited_by_user_profile.photo_url"
               class="smooth-corners photo-sm q-mr-sm"
             >
             <div>
               <div class="text-grey-7">Joined {{ moment(profile.time_created).format('MMM D, YYYY') }}</div>
-              <div class="text-grey-7">Nominated by <span class="text-weight-medium text-black">{{ profile.invited_by_user_profile.name }}</span></div>
+              <div
+                v-if="profile.invited_by_user_profile"
+                class="text-grey-7"
+              >
+                <span>Nominated by</span>
+                <span
+                  class="text-weight-medium text-black cursor-pointer"
+                  @click="goToProfile(profile.invited_by_user_profile.user_id)"
+                >
+                  {{ profile.invited_by_user_profile.name }}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -83,12 +104,15 @@
           >
             Member of
           </div>
-          <div class="q-mt-sm">
+          <div class="q-mt-sm flex">
             <div
               v-for="club in profile.clubs"
               :key="club.club_id"
             >
-              <img :src="club.photo_url" class="photo-xs q-mr-md smooth-corners">
+              <img
+                :src="club.photo_url"
+                class="photo-xs q-mr-sm smooth-corners"
+              >
             </div>
           </div>
         </div>
@@ -137,9 +161,16 @@ export default {
   },
   data () {
     return {
-      profile: {},
+      profile: null,
       tab: 'profile',
     }
+  },
+  watch: {
+    '$route.params.userId': {
+      handler () {
+        this.getProfile()
+      },
+    },
   },
   created () {
     this.getProfile()
@@ -149,7 +180,7 @@ export default {
     async getProfile () {
 
       const data = {
-        user_id: this.$store.getters['auth/userId'],
+        user_id: this.$route.params.userId ?? this.$store.getters['auth/userId'],
       }
       const headers = {
         Authorization: `Token ${this.$store.getters['auth/authToken']}`,
@@ -167,6 +198,9 @@ export default {
     },
     openLinkInBrowser (link) {
       shell.openExternal(link)
+    },
+    goToProfile (userId) {
+      this.$router.push({ name: 'profile', params: { userId: userId } })
     },
   },
 }
@@ -190,6 +224,7 @@ export default {
 
 .bio {
   font-size: 0.825rem;
+  white-space: pre-line;
 }
 
 .nominated-by-container {

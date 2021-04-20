@@ -15,7 +15,7 @@ const routes = [
         component: () => import('pages/Room.vue'),
       },
       {
-        path: 'profile',
+        path: 'profile/:userId?',
         name: 'profile',
         component: () => import('pages/Profile'),
       },
