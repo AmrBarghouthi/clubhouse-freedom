@@ -1,96 +1,130 @@
 <template>
-  <div>
-    <PageHeader @back="back">
-      <template #right>
-        <SettingsBtn></SettingsBtn>
-      </template>
-    </PageHeader>
-    <div
-      v-if="profile"
-      class="q-mx-md"
+  <div class="window-height">
+
+    <q-tab-panels
+      v-model="tab"
+      animated
+      vertical
+      class="bg-alabaster full-height"
     >
-      <img
-        :src="profile.photo_url"
-        class="photo smooth-corners"
+
+      <q-tab-panel
+        name="profile"
+        class="q-pa-none full-height"
       >
-
-      <div class="q-mt-sm text-weight-medium">{{ profile.name }}</div>
-      <div class=" text-grey-9">@{{ profile.username }}</div>
-
-      <div class="flex q-mt-sm">
-        <div class="q-mr-md">
-          <span class="text-h6 text-weight-medium">{{ profile.num_followers }}</span>
-          <span class="q-ml-xs">followers</span>
-        </div>
-        <div>
-          <span class="text-h6 text-weight-medium">{{ profile.num_following }}</span>
-          <span class="q-ml-xs">following</span>
-        </div>
-      </div>
-
-      <div class="q-my-md bio">
-        {{profile.bio}}
-      </div>
-
-      <div class="social-media-container">
+        <PageHeader
+          back-btn
+          @back="back"
+        >
+          <template #right>
+            <SettingsBtn @click="tab = 'settings'" />
+          </template>
+        </PageHeader>
         <div
-          v-if="profile.instagram"
-          class="q-mr-lg"
+          v-if="profile"
+          class="q-mx-md"
         >
-          <q-icon name="fab fa-twitter" style="color: #00acee;" />
-          <span class="text-weight-medium q-ml-xs">{{ profile.twitter }}</span>
-        </div>
-        <div
-          v-if="profile.twitter"
-          class="q-mr-lg"
-        >
-          <q-icon name="fab fa-instagram" style="color: #e95950;" />
-          <span class="text-weight-medium q-ml-xs">{{ profile.instagram }}</span>
-        </div>
-      </div>
+          <img
+            :src="profile.photo_url"
+            class="photo smooth-corners"
+          >
 
-      <div class="q-mt-xl nominated-by-container">
-        <img
-          :src="profile.invited_by_user_profile.photo_url"
-          class="smooth-corners photo-sm q-mr-sm"
-        >
-        <div>
-          <div class="text-grey-7">Joined {{ moment(profile.time_created).format('MMM D, YYYY') }}</div>
-          <div class="text-grey-7">Nominated by <span class="text-weight-medium text-black">{{ profile.invited_by_user_profile.name }}</span></div>
-        </div>
-      </div>
+          <div class="q-mt-sm text-weight-medium">{{ profile.name }}</div>
+          <div class=" text-grey-9">@{{ profile.username }}</div>
 
-      <div
-        v-if="profile.clubs.length"
-        class="q-mt-lg text-weight-medium text-grey-9"
+          <div class="flex q-mt-sm">
+            <div class="q-mr-md cursor-pointer">
+              <span class="text-h6 text-weight-medium">{{ profile.num_followers }}</span>
+              <span class="q-ml-xs">followers</span>
+            </div>
+            <div class="cursor-pointer">
+              <span class="text-h6 text-weight-medium">{{ profile.num_following }}</span>
+              <span class="q-ml-xs">following</span>
+            </div>
+          </div>
+
+          <div class="q-my-md bio">
+            {{profile.bio}}
+          </div>
+
+          <div class="social-media-container">
+            <div
+              v-if="profile.twitter"
+              class="q-mr-lg cursor-pointer"
+              @click="openLinkInBrowser(`https://twitter.com/${profile.twitter}`)"
+            >
+              <q-icon name="fab fa-twitter" style="color: #00acee;" />
+              <span class="text-weight-medium q-ml-xs">{{ profile.twitter }}</span>
+            </div>
+            <div
+              v-if="profile.instagram"
+              class="q-mr-lg cursor-pointer"
+              @click="openLinkInBrowser(`https://twitter.com/${profile.instagram}/`)"
+            >
+              <q-icon name="fab fa-instagram" style="color: #e95950;" />
+              <span class="text-weight-medium q-ml-xs">{{ profile.instagram }}</span>
+            </div>
+          </div>
+
+          <div class="q-mt-xl nominated-by-container">
+            <img
+              :src="profile.invited_by_user_profile.photo_url"
+              class="smooth-corners photo-sm q-mr-sm"
+            >
+            <div>
+              <div class="text-grey-7">Joined {{ moment(profile.time_created).format('MMM D, YYYY') }}</div>
+              <div class="text-grey-7">Nominated by <span class="text-weight-medium text-black">{{ profile.invited_by_user_profile.name }}</span></div>
+            </div>
+          </div>
+
+          <div
+            v-if="profile.clubs.length"
+            class="q-mt-lg text-weight-medium text-grey-9"
+          >
+            Member of
+          </div>
+          <div class="q-mt-sm">
+            <div
+              v-for="club in profile.clubs"
+              :key="club.club_id"
+            >
+              <img :src="club.photo_url" class="photo-xs q-mr-md smooth-corners">
+            </div>
+          </div>
+        </div>
+      </q-tab-panel>
+
+      <q-tab-panel
+        name="settings"
+        class="full-height"
       >
-        Member of
-      </div>
-      <div class="q-mt-sm">
-        <div
-          v-for="club in profile.clubs"
-          :key="club.club_id"
+        <PageHeader
+          exit-btn
+          @exit="tab = 'profile'"
         >
-          <img :src="club.photo_url" class="photo-xs q-mr-md smooth-corners">
-        </div>
-      </div>
-    </div>
+          SETTINGS
+        </PageHeader>
 
-    <q-btn
-      class="q-mt-xl q-mx-md"
-      label="Sign out"
-      color="negative"
-      dense
-      rounded
-      no-caps
-      @click="signOut"
-    />
+        <q-btn
+          class="q-mt-xl q-mx-md full-width text-red"
+          label="Log out"
+          color="white"
+          dense
+          no-caps
+          unelevated
+          @click="signOut"
+        />
+      </q-tab-panel>
+
+    </q-tab-panels>
+
   </div>
 </template>
 
 <script>
 import chAxios from 'src/ajax'
 import moment from 'moment'
+import { shell } from 'electron'
 
 import PageHeader from 'components/PageHeader'
 import SettingsBtn from 'components/ProfileIndex/SettingsBtn'
@@ -104,10 +138,11 @@ export default {
   data () {
     return {
       profile: {},
+      tab: 'profile',
     }
   },
   created () {
-    this.getProfile()
+    // this.getProfile()
   },
   methods: {
     moment,
@@ -129,6 +164,9 @@ export default {
     signOut () {
       this.$store.commit('auth/RESET')
       this.$router.push({ name: 'auth.login' })
+    },
+    openLinkInBrowser (link) {
+      shell.openExternal(link)
     },
   },
 }

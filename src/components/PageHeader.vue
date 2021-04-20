@@ -3,6 +3,7 @@
     <div>
       <slot name="left">
         <q-btn
+          v-show="backBtn"
           icon="chevron_left"
           flat
           :ripple="false"
@@ -14,15 +15,39 @@
       </slot>
     </div>
 
-    <div><slot /></div>
+    <div class="text-weight-medium">
+      <slot />
+    </div>
 
-    <div><slot name="right" /></div>
+    <div>
+      <slot name="right">
+        <q-btn
+          v-show="exitBtn"
+          icon="close"
+          flat
+          :ripple="false"
+          round
+          padding="none"
+          @click="$emit('exit')"
+        />
+      </slot>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-
+  name: 'PageHeader',
+  props: {
+    backBtn: {
+      type: Boolean,
+      default: false,
+    },
+    exitBtn: {
+      type: Boolean,
+      default: false,
+    },
+  }
 }
 </script>
 
