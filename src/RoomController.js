@@ -1,90 +1,93 @@
 import Pubnub from 'pubnub'
-import AgoraRtcEngine from "agora-electron-sdk";
-import chAxios from 'axios';
+import AgoraRtcEngine from 'agora-electron-sdk'
+import chAxios from './ajax'
 
 export default class RoomController{
-  constructor(userId,chAuthToken,autoLeaveOnRoomEnded = true,clearListnersOnRoomLeave = true){
+  constructor (userId,chAuthToken,autoLeaveOnRoomEnded = true,clearListenersOnRoomLeave = true){
     this.currentRoom = null
     this.userId = userId
     this.chAuthToken = chAuthToken
     this.autoLeaveOnRoomEnded = autoLeaveOnRoomEnded
-    this.clearListnersOnRoomLeave = clearListnersOnRoomLeave
-    this.clearAllEventListners()
+    this.clearListenersOnRoomLeave = clearListenersOnRoomLeave
+    this.clearAllEventListeners()
+    console.log(this.speakersUpdateListeners)
   }
 
-  getUserId(){
+  getUserId (){
     return (typeof this.userId === 'function')?this.userId():this.userId
   }
 
-  getChAuthToken(){
+  getChAuthToken (){
     return (typeof this.chAuthToken === 'function')?this.chAuthToken():this.chAuthToken
 
   }
-  joinRoom(room){
+  async joinRoom (room){
     return new Promise((resolve,reject)=>{
-       // joining on clubhouse server
-      const url = "join_channel";
-      const data = { channel: room };
+      // joining on clubhouse server
+      const url = 'join_channel'
+      const data = { channel: room }
       const headers = {
         Authorization: `Token ${this.getChAuthToken()}`,
-        "CH-UserID": this.getUserId()
-      };
+        'CH-UserID': this.getUserId(),
+      }
 
       chAxios
         .post(url, data, { headers })
-        .then(res => {
+        .then(async res => {
           try {
             await Promise.all([ this.joinRoomAgora(res.data.token,room),
-              this.joinPubnub(res.data.pubnubToken,res.data.pubnub_origin,res.data.pubnub_heartbeat_value,res.data.pubnub_heartbeat_intreval)])
-              this.currentRoom = room
-              resolve(res.data)
+              this.joinPubnub(room,res.data.pubnub_token,res.data.pubnub_origin,res.data.pubnub_heartbeat_value,res.data.pubnub_heartbeat_intreval)])
+            this.currentRoom = room
+            resolve(res.data)
           } catch (error) {
             reject(error)
           }
         })
         .catch((error) => {
           reject(error)
-        });
+        })
     })
 
   }
-  joinRoomAgora(token,room){
+  joinRoomAgora (token,room){
     return new Promise((resolve,reject) => {
-      const agoraAppId = "938de3e8055e42b281bb8c6f69c21f78";
-      this.rtcEngine = new AgoraRtcEngine();
-      this.rtcEngine.initialize(agoraAppId, 0xfffffffe);
-      this.rtcEngine.disableVideo();
-      if(this.currentRoom == room){
+      const agoraAppId = '938de3e8055e42b281bb8c6f69c21f78'
+      this.rtcEngine = new AgoraRtcEngine()
+      this.rtcEngine.initialize(agoraAppId, 0xfffffffe)
+      this.rtcEngine.disableVideo()
+      if (this.currentRoom == room){
         resolve()
         return
       }
       const info = ''
       const uid = this.getUserId()
-      const joinChannelReturnCode = await this.rtcEngine.joinChannel(
+      const joinChannelReturnCode = this.rtcEngine.joinChannel(
         token,
         room,
         info,
-        uid
+        uid,
       )
-
-      if(joinChannelReturnCode < 0)
-         reject('faild to join agora channel with code '+joinChannelReturnCode)
+      this.rtcEngine.enableAudioVolumeIndication(200, 3, false)
+      if (joinChannelReturnCode < 0)
+        reject('faild to join agora channel with code '+joinChannelReturnCode)
       else
         resolve()
-      })
+    })
 
   }
 
-  joinPubnub(token,origin,heartbeatValue,heartbeatInterval){
+  joinPubnub (room,token,origin,heartbeatValue,heartbeatInterval){
     const pnConfig = {
-      subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
-      publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
+      subscribeKey: 'sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d',
+      publishKey: 'pub-c-6878d382-5ae6-4494-9099-f930f938868b',
       uuid: this.getUserId(),
       presenceTimeout: heartbeatValue,
       heartbeatInterval: heartbeatInterval,
       origin: origin,
-      authKey: token
-    };
+      authKey: token,
+    }
+
+    const pubnub = new Pubnub(pnConfig)
     pubnub.addListener({
       // Messages
       message: (m)=> {
@@ -105,83 +108,93 @@ export default class RoomController{
         }
 
       },
-    });
-    const pubnub = new Pubnub(pnConfig);
+    })
     pubnub.subscribe({
-      channels:['users.'+this.userId,'channel_user.'+channel+'.'+this.userId,'channel_all.'+channel]
-    });
+      channels:['users.'+this.getUserId(),'channel_user.'+room+'.'+this.getUserId(),'channel_all.'+room],
+    })
     this.pubnub = pubnub
   }
 
-  userJoindEvent(profile)
+  userJoindEvent (profile)
   {
-    this.userJoindEventListners.forEach(cb => cb(profile))
+    console.log('user joined.....')
+    this.userJoindEventListeners.forEach(cb => cb(profile))
   }
 
-  userLeftEvent(userId)
+  userLeftEvent (userId)
   {
-    this.userLeftEventListners.forEach(cb => cb(userId))
+    console.log('user left.....')
+    this.userLeftEventListeners.forEach(cb => cb(userId))
   }
 
-  roomEndedEvent(){
-    this.roomEndedEventListners.forEach(cb => cb())
-    if(this.autoLeaveOnRoomEnded)
+  roomEndedEvent (){
+    console.log('ended...')
+    this.roomEndedEventListeners.forEach(cb => cb())
+    if (this.autoLeaveOnRoomEnded)
       this.leaveRoom()
   }
-  addListener(event,callback)
+  speakersUpdateEvent () {
+    console.log(this)
+    // this.speakersUpdateListeners.forEach(cb => cb(speakers))
+  }
+  addListener (event,callback)
   {
     switch (event) {
-      case 'user_joined':
-        this.userJoindEventListners.push(callback)
-        break;
-      case 'user_left':
-        this.userLeftEventListners.push(callback)
-        break;
-      case 'room_ended':
-        this.roomEndedEventListners.push(callback)
-        break;
-      case 'inveted_to_speak':
-        this.invetedToSpeakEventListners.push(callback)
-        break;
+      case 'userJoined':
+        this.userJoindEventListeners.push(callback)
+        break
+      case 'userLeft':
+        this.userLeftEventListeners.push(callback)
+        break
+      case 'roomEnded':
+        this.roomEndedEventListeners.push(callback)
+        break
+      case 'invetedToSpeak':
+        this.invetedToSpeakEventListeners.push(callback)
+        break
+      case 'speakersVolumeUpdadetd':
+        this.rtcEngine.on('groupAudioVolumeIndication', callback)
+        break
 
     }
   }
-  clearAllEventListners()
+  clearAllEventListeners ()
   {
-    this.userJoindEventListners = []
-    this.userLeftEventListners = []
-    this.roomEndedEventListners = []
-    this.invetedToSpeakEventListners = []
+    this.userJoindEventListeners = []
+    this.userLeftEventListeners = []
+    this.roomEndedEventListeners = []
+    this.invetedToSpeakEventListeners = []
   }
-  async leaveRoom(){
+  async leaveRoom (){
     return new Promise((resolve,reject) => {
       try {
-        await this.rtcEngine.leaveChannel();
+        this.rtcEngine.leaveChannel()
+        this.rtcEngine.release()
       } catch (error) {
         reject(error)
         return
       }
 
-      const url = "leave_channel";
-      const data = { channel: this.currentRoom, channel_id: null };
+      const url = 'leave_channel'
+      const data = { channel: this.currentRoom, channel_id: null }
       const headers = {
         Authorization: `Token ${this.getChAuthToken()}`,
-        "CH-UserID": this.getUserId()
-      };
+        'CH-UserID': this.getUserId(),
+      }
 
       try {
-        await chAxios.post(url, data, { headers });
+        chAxios.post(url, data, { headers })
+          .then(()=>{
+            this.pubnub.stop()
+            this.currentRoom = null
+            if (this.clearListenersOnRoomLeave)
+              this.clearAllEventListeners()
+            resolve()
+          })
       } catch (error) {
         reject(error)
         return
       }
-
-      this.pubnub.stop()
-       this.currentRoom = null
-      if(this.clearListnersOnRoomLeave)
-        this.clearAllEventListners()
-
-      resolve()
     })
   }
 };

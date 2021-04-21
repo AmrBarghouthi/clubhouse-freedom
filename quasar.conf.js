@@ -23,6 +23,7 @@ module.exports = function (/* ctx */) {
       'paints.js',
       'registerIsBlockedWatcher',
       'registerShouldAuthenticateWatcher',
+      'registerRoomController',
     ],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
