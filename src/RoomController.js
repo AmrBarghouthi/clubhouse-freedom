@@ -176,11 +176,8 @@ class RoomController{
         return
       }
 
-<<<<<<< HEAD
       this.pubnub.stop()
-=======
->>>>>>> e7c7c6684b602171db4cc96ff0f53f36d8cbc3ef
-      this.currentRoom = null
+       this.currentRoom = null
       if(this.clearListnersOnRoomLeave)
         this.clearAllEventListners()
 
