@@ -12,14 +12,22 @@ export default class RoomController{
     this.clearAllEventListners()
   }
 
+  getUserId(){
+    return (typeof this.userId === 'function')?this.userId():this.userId
+  }
+
+  getChAuthToken(){
+    return (typeof this.chAuthToken === 'function')?this.chAuthToken():this.chAuthToken
+
+  }
   joinRoom(room){
     return new Promise((resolve,reject)=>{
        // joining on clubhouse server
       const url = "join_channel";
       const data = { channel: room };
       const headers = {
-        Authorization: `Token ${this.authToken}`,
-        "CH-UserID": this.userId
+        Authorization: `Token ${this.getChAuthToken()}`,
+        "CH-UserID": this.getUserId()
       };
 
       chAxios
@@ -51,7 +59,7 @@ export default class RoomController{
         return
       }
       const info = ''
-      const uid = this.userId
+      const uid = this.getUserId()
       const joinChannelReturnCode = await this.rtcEngine.joinChannel(
         token,
         room,
@@ -71,7 +79,7 @@ export default class RoomController{
     const pnConfig = {
       subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
       publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
-      uuid: this.userId,
+      uuid: this.getUserId(),
       presenceTimeout: heartbeatValue,
       heartbeatInterval: heartbeatInterval,
       origin: origin,
@@ -157,8 +165,8 @@ export default class RoomController{
       const url = "leave_channel";
       const data = { channel: this.currentRoom, channel_id: null };
       const headers = {
-        Authorization: `Token ${this.chAuthToken}`,
-        "CH-UserID": this.userId
+        Authorization: `Token ${this.getChAuthToken()}`,
+        "CH-UserID": this.getUserId()
       };
 
       try {
