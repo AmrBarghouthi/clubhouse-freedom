@@ -1,8 +1,16 @@
 import Pubnub from 'pubnub'
 import AgoraRtcEngine from "agora-electron-sdk";
+<<<<<<< HEAD
 import chAxios from 'axios';
 
 export default class RoomController{
+=======
+import Ajax from './ajax'
+import { reject, resolve } from 'core-js/fn/promise';
+import chAxios from 'axios';
+
+class RoomController{
+>>>>>>> e7c7c6684b602171db4cc96ff0f53f36d8cbc3ef
   constructor(userId,chAuthToken,autoLeaveOnRoomEnded = true,clearListnersOnRoomLeave = true){
     this.currentRoom = null
     this.userId = userId
@@ -168,7 +176,10 @@ export default class RoomController{
         return
       }
 
+<<<<<<< HEAD
       this.pubnub.stop()
+=======
+>>>>>>> e7c7c6684b602171db4cc96ff0f53f36d8cbc3ef
       this.currentRoom = null
       if(this.clearListnersOnRoomLeave)
         this.clearAllEventListners()
