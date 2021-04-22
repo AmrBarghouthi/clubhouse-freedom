@@ -1,12 +1,11 @@
 import Pubnub from 'pubnub'
 import AgoraRtcEngine from 'agora-electron-sdk'
-import chAxios from './ajax'
 
 export default class RoomController{
-  constructor (userId,chAuthToken,autoLeaveOnRoomEnded = true,clearListenersOnRoomLeave = true){
+  constructor (userId,clubhouseApi,autoLeaveOnRoomEnded = true,clearListenersOnRoomLeave = true){
     this.currentRoom = null
     this.userId = userId
-    this.chAuthToken = chAuthToken
+    this.clubhouseApi = clubhouseApi
     this.autoLeaveOnRoomEnded = autoLeaveOnRoomEnded
     this.clearListenersOnRoomLeave = clearListenersOnRoomLeave
     this.clearAllEventListeners()
@@ -16,28 +15,18 @@ export default class RoomController{
     return (typeof this.userId === 'function')?this.userId():this.userId
   }
 
-  getChAuthToken (){
-    return (typeof this.chAuthToken === 'function')?this.chAuthToken():this.chAuthToken
 
-  }
   async joinRoom (room){
     return new Promise((resolve,reject)=>{
       // joining on clubhouse server
-      const url = 'join_channel'
-      const data = { channel: room }
-      const headers = {
-        Authorization: `Token ${this.getChAuthToken()}`,
-        'CH-UserID': this.getUserId(),
-      }
 
-      chAxios
-        .post(url, data, { headers })
+      this.clubhouseApi.joinChannel(room)
         .then(async res => {
           try {
-            await Promise.all([ this.joinRoomAgora(res.data.token,room),
-              this.joinPubnub(room,res.data.pubnub_token,res.data.pubnub_origin,res.data.pubnub_heartbeat_value,res.data.pubnub_heartbeat_intreval)])
+            await Promise.all([ this.joinRoomAgora(res.token,room),
+              this.joinPubnub(room,res.pubnub_token,res.pubnub_origin,res.pubnub_heartbeat_value,res.pubnub_heartbeat_intreval)])
             this.currentRoom = room
-            resolve(res.data)
+            resolve(res)
           } catch (error) {
             reject(error)
           }
@@ -170,15 +159,9 @@ export default class RoomController{
         return
       }
 
-      const url = 'leave_channel'
-      const data = { channel: this.currentRoom, channel_id: null }
-      const headers = {
-        Authorization: `Token ${this.getChAuthToken()}`,
-        'CH-UserID': this.getUserId(),
-      }
 
       try {
-        chAxios.post(url, data, { headers })
+        this.clubhouseApi.leaveChannel(this.currentRoom)
           .then(()=>{
             this.pubnub.stop()
             this.currentRoom = null
