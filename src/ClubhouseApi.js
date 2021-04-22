@@ -2,93 +2,92 @@ import ajax from './ajax'
 
 export default class ClubhouseApi{
 
-  constructor(credentials = null)
-  {
+  constructor (credentials = null) {
     this.credentials = credentials
   }
 
-  getCredentials() {
-    if(this.credentials != null)
+  getCredentials () {
+    if (this.credentials != null)
       return (typeof this.credentials == 'function')?this.credentials():this.credentials
     else
       throw 'No credentials provided'
   }
 
-  getUserId(){
+  getUserId (){
     return this.getCredentials().userId
   }
 
-  getAuthtoken() {
+  getAuthtoken () {
     return this.getCredentials().authToken
   }
 
-  getAuthHeaders() {
+  getAuthHeaders () {
     return {
       'CH-UserID': this.getUserId(),
-      'Authorization': `Token ${this.getAuthtoken()}`
+      'Authorization': `Token ${this.getAuthtoken()}`,
     }
   }
-  startPhoneNumberAuth(phoneNumber) {
+  startPhoneNumberAuth (phoneNumber) {
     const data = {
-      phone_number: phoneNumber
+      phone_number: phoneNumber,
     }
     const url = 'start_phone_number_auth'
     return new Promise((resolve,reject) => {
       ajax.post(url, data)
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  callPhoneNumberAuth(phoneNumber) {
+  callPhoneNumberAuth (phoneNumber) {
     const data = {
-      phone_number: phoneNumber
+      phone_number: phoneNumber,
     }
     const url = 'call_phone_number_auth'
     return new Promise((resolve,reject) => {
       ajax.post(url, data)
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })  }
 
-  resendPhoneNumberAuth(phoneNumber) {
+  resendPhoneNumberAuth (phoneNumber) {
     const data = {
-      phone_number: phoneNumber
+      phone_number: phoneNumber,
     }
     const url = 'resend_phone_number_auth'
     return new Promise((resolve,reject) => {
       ajax.post(url, data)
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  completePhoneNumberAuth(phoneNumber,verificationCode) {
+  completePhoneNumberAuth (phoneNumber,verificationCode) {
     const data = {
       phone_number: phoneNumber,
-      verification_code: verificationCode
+      verification_code: verificationCode,
     }
     const url = 'complete_phone_number_auth'
     return new Promise((resolve,reject) => {
       ajax.post(url, data)
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  checkWaitlistStatus() {
+  checkWaitlistStatus () {
     const headers = this.getAuthHeaders()
     const url = 'check_waitlist_status'
     return new Promise((resolve,reject) => {
       ajax.post(url, {}, {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  updatePhoto(photo) {
+  updatePhoto (photo) {
     const headers = this.getAuthHeaders()
     const data = new FormData()
     data.append('file', photo, 'image.jpg')
@@ -96,139 +95,139 @@ export default class ClubhouseApi{
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  joinChannel(channel) {
+  joinChannel (channel) {
     const headers = this.getAuthHeaders()
     const data = {
       channel,
     }
-     const url = 'join_channel'
+    const url = 'join_channel'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  leaveChannel(channel) {
+  leaveChannel (channel) {
     const headers = this.getAuthHeaders()
     const data = {
       channel,
-      channel_id: null
+      channel_id: null,
     }
-     const url = 'leave_channel'
+    const url = 'leave_channel'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  getProfile(userId) {
+  getProfile (userId) {
     const headers = this.getAuthHeaders()
     const data = {
-      user_id: userId
+      user_id: userId,
     }
-     const url = 'get_profile'
+    const url = 'get_profile'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  getChannels() {
+  getChannels () {
     const headers = this.getAuthHeaders()
     const data = {
     }
-     const url = 'get_channels'
+    const url = 'get_channels'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  updateUsername(username) {
+  updateUsername (username) {
     const headers = this.getAuthHeaders()
     const data = {
-      username
+      username,
     }
     const url = 'update_username'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  updateName(name) {
+  updateName (name) {
     const headers = this.getAuthHeaders()
     const data = {
-      name
+      name,
     }
     const url = 'update_name'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  refreshToken(refreshToken)
+  refreshToken (refreshToken)
   {
     const headers = this.getAuthHeaders()
     const data = {
-      refresh: refreshToken
+      refresh: refreshToken,
     }
     const url = 'refresh_token'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  updateBio(bio){
+  updateBio (bio){
     const headers = this.getAuthHeaders()
     const data = {
-      bio: bio
+      bio: bio,
     }
     const url = 'update_bio'
 
     return new Promise((resolve,reject) => {
       ajax.post(url, data , {
-        headers
+        headers,
       })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 

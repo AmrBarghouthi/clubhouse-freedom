@@ -8,7 +8,7 @@ export default ({ Vue, store }) =>
   const clubhouseApi = new ClubhouseApi(()=> {
     return {
       userId: userIdResolver(),
-      authToken: chAuthTokenResolver()
+      authToken: chAuthTokenResolver(),
     }
   })
   const roomController = new RoomController(userIdResolver,clubhouseApi)
