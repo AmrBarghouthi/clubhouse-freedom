@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import chAxios from 'src/ajax'
 import PhoneNumberForm from 'components/Auth/Login/PhoneNumberForm'
 import SmsVerificationCodeForm from 'components/Auth/Login/SmsVerificationCodeForm'
 
@@ -108,21 +107,18 @@ export default {
     signInGetSms (phoneNumber) {
       this.phoneNumber = phoneNumber
       this.state.isBusy = true
-      return chAxios
-        .post('start_phone_number_auth', { phone_number: phoneNumber })
-        .then(res => this.$store.commit('auth/UPDATE_SIGN_IN_ATTEMPT_STATE', res.data))
+      return this.$clubhouseApi.startPhoneNumberAuth(phoneNumber)
+        .then(res => this.$store.commit('auth/UPDATE_SIGN_IN_ATTEMPT_STATE', res))
         .finally(() => this.state.isBusy = false)
     },
     signInResendSms () {
       this.state.isBusy = true
-      return chAxios
-        .post('resend_phone_number_auth', { phone_number: this.phoneNumber })
+      return this.$clubhouseApi.resendPhoneNumberAuth(this.phoneNumber)
         .finally(() => this.state.isBusy = false)
     },
     signInGetCall () {
       this.state.isBusy = true
-      return chAxios
-        .post('call_phone_number_auth', { phone_number: this.phoneNumber })
+      return this.$clubhouseApi.callPhoneNumberAuth(this.phoneNumber)
         .finally(() => this.state.isBusy = false)
     },
     signInRestart () {
@@ -132,12 +128,8 @@ export default {
     signInComplete (verificationCode) {
       this.verificationCode = verificationCode
       this.state.isBusy = true
-      return chAxios
-        .post('complete_phone_number_auth', {
-          phone_number: this.phoneNumber,
-          verification_code: verificationCode,
-        })
-        .then(res => this.$store.commit('auth/UPDATE_COMPLETE_SIGN_IN_ATTEMPT_STATE', res.data))
+      return this.$clubhouseApi.completePhoneNumberAuth(this.phoneNumber,verificationCode)
+        .then(res => this.$store.commit('auth/UPDATE_COMPLETE_SIGN_IN_ATTEMPT_STATE', res))
         .finally(() => this.state.isBusy = false)
     },
   },
