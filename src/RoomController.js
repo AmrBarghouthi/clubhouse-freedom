@@ -10,7 +10,6 @@ export default class RoomController{
     this.autoLeaveOnRoomEnded = autoLeaveOnRoomEnded
     this.clearListenersOnRoomLeave = clearListenersOnRoomLeave
     this.clearAllEventListeners()
-    console.log(this.speakersUpdateListeners)
   }
 
   getUserId (){
@@ -117,26 +116,20 @@ export default class RoomController{
 
   userJoindEvent (profile)
   {
-    console.log('user joined.....')
     this.userJoindEventListeners.forEach(cb => cb(profile))
   }
 
   userLeftEvent (userId)
   {
-    console.log('user left.....')
     this.userLeftEventListeners.forEach(cb => cb(userId))
   }
 
   roomEndedEvent (){
-    console.log('ended...')
     this.roomEndedEventListeners.forEach(cb => cb())
     if (this.autoLeaveOnRoomEnded)
       this.leaveRoom()
   }
-  speakersUpdateEvent () {
-    console.log(this)
-    // this.speakersUpdateListeners.forEach(cb => cb(speakers))
-  }
+
   addListener (event,callback)
   {
     switch (event) {
