@@ -76,7 +76,7 @@ export default class ClubhouseApi{
     })
   }
 
-  checkWaitlistStatus(phoneNumber,verificationCode) {
+  checkWaitlistStatus() {
     const headers = this.getAuthHeaders()
     const url = 'check_waitlist_status'
     return new Promise((resolve,reject) => {
