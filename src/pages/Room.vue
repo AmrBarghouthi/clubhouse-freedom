@@ -31,7 +31,10 @@
               style="margin-left: 3px;"
               :class="{ 'font-bold': isSpeakingNow(speaker.user_id) }"
             >
-              {{ speaker.first_name }}
+              {{ speaker.first_name }}  <q-icon
+                v-if="isMuted(speaker.user_id)"
+                name="fas fa-microphone-slash"
+              />
             </span>
           </div>
         </div>
@@ -120,6 +123,7 @@ export default {
     return {
       roomInfo: {},
       speakingNowInfo: [],
+      mutedUsers: [],
     }
   },
   computed: {
@@ -151,6 +155,7 @@ export default {
     this.$roomController.addListener('userJoined', this.userJoindEvent)
     this.$roomController.addListener('userLeft', this.userLeftEvent)
     this.$roomController.addListener('speakersVolumeUpdadetd',this.speakerUpdateEvent)
+    this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
   },
   beforeDestroy () {},
   methods: {
@@ -183,6 +188,13 @@ export default {
       if (_.find(speakers, speaker => speaker.uid === 0)) return
       this.speakingNowInfo = speakers
     },
+    userMuteUpdatedEvent (userId, muted){
+      const index = this.mutedUsers.indexOf(userId)
+      if (muted && index == -1)
+        this.mutedUsers.push(userId)
+      else if (!muted && index != -1)
+        this.mutedUsers.splice(index,1)
+    },
     showFailedToJoinNotification () {
       this.$q.notify({
         type: 'negative',
@@ -195,6 +207,9 @@ export default {
       return (
         this.speakingNowInfo.find(user => user.uid === userId) !== undefined
       )
+    },
+    isMuted (userId) {
+      return (this.mutedUsers.find(id => id === userId) !== undefined)
     },
   },
 }

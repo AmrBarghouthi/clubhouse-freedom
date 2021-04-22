@@ -155,7 +155,9 @@ export default class RoomController{
       case 'speakersVolumeUpdadetd':
         this.rtcEngine.on('groupAudioVolumeIndication', callback)
         break
-
+      case 'userMuteChanged':
+        this.rtcEngine.on('userMuteAudio', callback)
+        break
     }
   }
   clearAllEventListeners ()
