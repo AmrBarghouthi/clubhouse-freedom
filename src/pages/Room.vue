@@ -21,17 +21,13 @@
             :glowing="isSpeakingNow(speaker.user_id)"
           />
           <div class="q-mt-sm under-photo">
-            <q-icon
+            <SpeakerAsterisk
               v-if="speaker.is_moderator"
-              name="star"
-              class="text-white bg-primary"
-              style="border-radius: 100%"
+              style="width: 1rem; height: 1rem;"
             />
-            <span
-              style="margin-left: 3px;"
-              :class="{ 'font-bold': isSpeakingNow(speaker.user_id) }"
-            >
-              {{ speaker.first_name }}  <q-icon
+            <span style="margin-left: 3px;">
+              <span>{{ speaker.first_name }}</span>
+              <q-icon
                 v-if="isMuted(speaker.user_id)"
                 name="fas fa-microphone-slash"
               />
@@ -115,11 +111,13 @@
 <script>
 import _ from 'lodash'
 import Avatar from 'components/Avatar'
+import SpeakerAsterisk from 'components/Room/SpeakerAsterisk'
 
 export default {
   name: 'PageRoom',
   components: {
     Avatar,
+    SpeakerAsterisk,
   },
   data () {
     return {
