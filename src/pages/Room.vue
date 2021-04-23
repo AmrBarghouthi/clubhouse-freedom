@@ -159,12 +159,12 @@ export default {
         return 'others'
       })
     },
-    userIsNotASpeaker() {
-      if(this.usersCategorized.speakers)
+    userIsNotASpeaker () {
+      if (this.usersCategorized.speakers)
         return this.usersCategorized.speakers.find(speaker => speaker.user_id === this.userId) === undefined
       else
         return false
-    }
+    },
   },
   async created () {
     const room = this.$route.params.roomCode
@@ -181,11 +181,11 @@ export default {
   },
   beforeDestroy () {},
   methods: {
-    raiseHand() {
+    raiseHand () {
       this.$roomController.raiseHand()
       this.handRasid = true
     },
-    unraiseHand() {
+    unraiseHand () {
       this.$roomController.unraiseHand()
       this.handRasid = false
     },
