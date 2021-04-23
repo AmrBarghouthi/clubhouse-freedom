@@ -276,6 +276,8 @@ export default {
         return
       }
 
+      this.state.isUpdatingPhoto = true
+
       const data = new FormData()
       data.append('file', event.photo, 'image.jpg')
 
