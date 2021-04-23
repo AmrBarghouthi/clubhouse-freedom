@@ -264,4 +264,21 @@ export default class ClubhouseApi{
         .catch(err => reject(err))
     })
   }
+
+  audienceReply (channel, rasie = true, unraise = false) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      channel,
+      raise_hands: rasie,
+      unraise_hands: unraise,
+    }
+    const url = 'audience_reply'
+    return new Promise((resolve,reject) => {
+      ajax.post(url, data , {
+        headers,
+      })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
 }
