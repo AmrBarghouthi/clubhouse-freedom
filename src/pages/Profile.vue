@@ -17,7 +17,10 @@
           @back="back"
         >
           <template #right>
-            <ProfileSettingsBtn @click="tab = 'settings'" />
+            <ProfileSettingsBtn
+              v-if="isAuthenticatedUserProfile"
+              @click="tab = 'settings'"
+            />
           </template>
         </PageHeader>
 
@@ -93,6 +96,7 @@
       </q-tab-panel>
 
       <q-tab-panel
+        v-if="isAuthenticatedUserProfile"
         name="settings"
         class="full-height"
       >
@@ -195,7 +199,7 @@ export default {
       return this.profile?.photo_url
     },
     isAuthenticatedUserProfile () {
-      return this.profile.user_id === this.$store.getters['auth/userId']
+      return this.profile?.user_id === this.$store.getters['auth/userId']
     },
     canUpdateBio () {
       return this.isAuthenticatedUserProfile
