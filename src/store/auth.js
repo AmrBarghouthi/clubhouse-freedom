@@ -65,13 +65,13 @@ export default {
     UPDATE_PHOTO_URL (state, photoUrl) {
       state.user.photoUrl = photoUrl
     },
-    RESET: (state) => {
-      Object.assign(state,_.cloneDeep(defaultState))
+    RESET: state => {
+      Object.assign(state, _.cloneDeep(defaultState))
     },
-    MARK_AS_ONBOARD: (state) => {
+    MARK_AS_ONBOARD: state => {
       state.isOnboarding = false
     },
-    MARK_AS_INVITED: (state) => {
+    MARK_AS_INVITED: state => {
       state.isWaitlisted = false
     },
   },

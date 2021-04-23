@@ -1,8 +1,8 @@
 import Pubnub from 'pubnub'
 import AgoraRtcEngine from 'agora-electron-sdk'
 
-export default class RoomController{
-  constructor (userId,clubhouseApi,autoLeaveOnRoomEnded = true,clearListenersOnRoomLeave = true){
+export default class RoomController {
+  constructor (userId, clubhouseApi, autoLeaveOnRoomEnded = true, clearListenersOnRoomLeave = true) {
     this.currentRoom = null
     this.userId = userId
     this.clubhouseApi = clubhouseApi
@@ -13,43 +13,44 @@ export default class RoomController{
     this.clearAllEventListeners()
   }
 
-  getUserId (){
-    return (typeof this.userId === 'function')?this.userId():this.userId
+  getUserId () {
+    return (typeof this.userId === 'function') ? this.userId() : this.userId
   }
 
 
-  async joinRoom (room){
-    return new Promise((resolve,reject)=>{
+  async joinRoom (room) {
+    return new Promise((resolve, reject) => {
       // joining on clubhouse server
       this.clubhouseApi.joinChannel(room)
         .then(async res => {
           try {
-            await Promise.all([ this.joinRoomAgora(res.token,room),
-              this.joinPubnub(room,res.pubnub_token,res.pubnub_origin,res.pubnub_heartbeat_value,res.pubnub_heartbeat_intreval)])
-            if (this.currentRoom !== room)
+            await Promise.all([this.joinRoomAgora(res.token, room),
+              this.joinPubnub(room, res.pubnub_token, res.pubnub_origin, res.pubnub_heartbeat_value, res.pubnub_heartbeat_intreval)])
+            if (this.currentRoom !== room) {
               this.handRaisd = false
+            }
             this.currentRoom = room
             resolve(res)
           } catch (error) {
             reject(error)
           }
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error)
         })
     })
 
   }
 
-  joinRoomAgora (token,room){
-    return new Promise((resolve,reject) => {
+  joinRoomAgora (token, room) {
+    return new Promise((resolve, reject) => {
       const agoraAppId = '938de3e8055e42b281bb8c6f69c21f78'
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(agoraAppId, 0xfffffffe)
       this.rtcEngine.disableVideo()
       this.setMute(true)
 
-      if (this.currentRoom == room){
+      if (this.currentRoom == room) {
         resolve()
         return
       }
@@ -62,15 +63,16 @@ export default class RoomController{
         uid,
       )
       this.rtcEngine.enableAudioVolumeIndication(200, 3, true)
-      if (joinChannelReturnCode < 0)
-        reject('faild to join agora channel with code '+joinChannelReturnCode)
-      else
+      if (joinChannelReturnCode < 0) {
+        reject('faild to join agora channel with code ' + joinChannelReturnCode)
+      } else {
         resolve()
+      }
     })
 
   }
 
-  joinPubnub (room,token,origin,heartbeatValue,heartbeatInterval){
+  joinPubnub (room, token, origin, heartbeatValue, heartbeatInterval) {
     const pnConfig = {
       subscribeKey: 'sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d',
       publishKey: 'pub-c-6878d382-5ae6-4494-9099-f930f938868b',
@@ -84,8 +86,8 @@ export default class RoomController{
     const pubnub = new Pubnub(pnConfig)
     pubnub.addListener({
       // Messages
-      message: (m)=> {
-        switch (m.message.action){
+      message: m => {
+        switch (m.message.action) {
           case 'join_channel':
             this.userJoindEvent(m.message.user_profile)
             break
@@ -105,31 +107,30 @@ export default class RoomController{
             this.speakerRemovedEvent(m.message.user_id)
             break
           default:
-            console.log({pubnubMessage: m})
+            console.log({ pubnubMessage: m })
         }
 
       },
     })
     pubnub.subscribe({
-      channels:['users.'+this.getUserId(),'channel_user.'+room+'.'+this.getUserId(),'channel_all.'+room],
+      channels:['users.' + this.getUserId(), 'channel_user.' + room + '.' + this.getUserId(), 'channel_all.' + room],
     })
     this.pubnub = pubnub
   }
 
-  userJoindEvent (profile)
-  {
+  userJoindEvent (profile) {
     this.userJoindEventListeners.forEach(cb => cb(profile))
   }
 
-  userLeftEvent (userId)
-  {
+  userLeftEvent (userId) {
     this.userLeftEventListeners.forEach(cb => cb(userId))
   }
 
-  roomEndedEvent (){
+  roomEndedEvent () {
     this.roomEndedEventListeners.forEach(cb => cb())
-    if (this.autoLeaveOnRoomEnded)
+    if (this.autoLeaveOnRoomEnded) {
       this.leaveRoom()
+    }
   }
 
   invetedToSpeakEvent (fromName, fromUserId) {
@@ -143,6 +144,7 @@ export default class RoomController{
   muteChangedEvent (userId, mute) {
     this.muteChangedListeners.forEach(cb => cb(userId, mute))
   }
+
   acceptSpeakerInvite (inviterId) {
     this.clubhouseApi.acceptSpeakerInvite(this.currentRoom, inviterId)
       .then(() => this.updateRoom())
@@ -154,11 +156,10 @@ export default class RoomController{
 
   updateRoom () {
     this.clubhouseApi.getChannel(this.currentRoom)
-      .then((data) => this.roomUpdatedEvent(data))
+      .then(data => this.roomUpdatedEvent(data))
   }
 
-  addListener (event,callback)
-  {
+  addListener (event, callback) {
     switch (event) {
       case 'userJoined':
         this.userJoindEventListeners.push(callback)
@@ -189,6 +190,7 @@ export default class RoomController{
         this.speakerRemovedListeners.push(callback)
     }
   }
+
   setMute (mute) {
     this.muteChangedEvent(this.getUserId(), mute)
     this.rtcEngine.muteLocalAudioStream(mute)
@@ -211,8 +213,8 @@ export default class RoomController{
     this.speakerRemovedListeners = []
   }
 
-  async leaveRoom (){
-    return new Promise((resolve,reject) => {
+  async leaveRoom () {
+    return new Promise((resolve, reject) => {
       try {
         this.rtcEngine.leaveChannel()
         this.rtcEngine.release()
@@ -224,11 +226,12 @@ export default class RoomController{
 
       try {
         this.clubhouseApi.leaveChannel(this.currentRoom)
-          .then(()=>{
+          .then(() => {
             this.pubnub.stop()
             this.currentRoom = null
-            if (this.clearListenersOnRoomLeave)
+            if (this.clearListenersOnRoomLeave) {
               this.clearAllEventListeners()
+            }
             resolve()
           })
       } catch (error) {

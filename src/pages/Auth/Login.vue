@@ -66,8 +66,7 @@ export default {
     stage () {
       if (this.hasRequstedSmsVerificationCode && this.numberOfSmsVerificationAttemptsRemaining !== 0) {
         return 'AWAITING_VERIFICATION_CODE'
-      }
-      else {
+      } else {
         return 'NEW'
       }
     },
@@ -128,7 +127,7 @@ export default {
     signInComplete (verificationCode) {
       this.verificationCode = verificationCode
       this.state.isBusy = true
-      return this.$clubhouseApi.completePhoneNumberAuth(this.phoneNumber,verificationCode)
+      return this.$clubhouseApi.completePhoneNumberAuth(this.phoneNumber, verificationCode)
         .then(res => this.$store.commit('auth/UPDATE_COMPLETE_SIGN_IN_ATTEMPT_STATE', res))
         .finally(() => this.state.isBusy = false)
     },

@@ -81,8 +81,12 @@ export default {
       const res = await this.$clubhouseApi.getChannels()
       this.state.isBusy = false
 
-      if (_.has(res, 'channels')) this.rooms = res.channels
-      if (_.has(res, 'events')) this.events = res.events
+      if (_.has(res, 'channels')) {
+        this.rooms = res.channels
+      }
+      if (_.has(res, 'events')) {
+        this.events = res.events
+      }
 
     },
     enterRoom (roomCode) {

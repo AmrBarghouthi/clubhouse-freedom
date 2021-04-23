@@ -1,19 +1,20 @@
 import ajax from './ajax'
 
-export default class ClubhouseApi{
+export default class ClubhouseApi {
 
   constructor (credentials = null) {
     this.credentials = credentials
   }
 
   getCredentials () {
-    if (this.credentials != null)
-      return (typeof this.credentials == 'function')?this.credentials():this.credentials
-    else
+    if (this.credentials != null) {
+      return (typeof this.credentials == 'function') ? this.credentials() : this.credentials
+    } else {
       throw 'No credentials provided'
+    }
   }
 
-  getUserId (){
+  getUserId () {
     return this.getCredentials().userId
   }
 
@@ -27,12 +28,13 @@ export default class ClubhouseApi{
       'Authorization': `Token ${this.getAuthtoken()}`,
     }
   }
+
   startPhoneNumberAuth (phoneNumber) {
     const data = {
       phone_number: phoneNumber,
     }
     const url = 'start_phone_number_auth'
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       ajax.post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
@@ -44,31 +46,32 @@ export default class ClubhouseApi{
       phone_number: phoneNumber,
     }
     const url = 'call_phone_number_auth'
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data)
-        .then(res => resolve(res.data))
-        .catch(err => reject(err))
-    })  }
-
-  resendPhoneNumberAuth (phoneNumber) {
-    const data = {
-      phone_number: phoneNumber,
-    }
-    const url = 'resend_phone_number_auth'
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       ajax.post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
-  completePhoneNumberAuth (phoneNumber,verificationCode) {
+  resendPhoneNumberAuth (phoneNumber) {
+    const data = {
+      phone_number: phoneNumber,
+    }
+    const url = 'resend_phone_number_auth'
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data)
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
+  completePhoneNumberAuth (phoneNumber, verificationCode) {
     const data = {
       phone_number: phoneNumber,
       verification_code: verificationCode,
     }
     const url = 'complete_phone_number_auth'
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       ajax.post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
@@ -78,7 +81,7 @@ export default class ClubhouseApi{
   checkWaitlistStatus () {
     const headers = this.getAuthHeaders()
     const url = 'check_waitlist_status'
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       ajax.post(url, {}, {
         headers,
       })
@@ -94,8 +97,8 @@ export default class ClubhouseApi{
       channel_id: null,
     }
     const url = 'get_channel'
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data,{ headers })
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, { headers })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
@@ -107,8 +110,8 @@ export default class ClubhouseApi{
     data.append('file', photo, 'image.jpg')
     const url = 'update_photo'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -123,8 +126,8 @@ export default class ClubhouseApi{
     }
     const url = 'join_channel'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -140,8 +143,8 @@ export default class ClubhouseApi{
     }
     const url = 'leave_channel'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -156,8 +159,8 @@ export default class ClubhouseApi{
     }
     const url = 'get_profile'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -171,8 +174,8 @@ export default class ClubhouseApi{
     }
     const url = 'get_channels'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -187,8 +190,8 @@ export default class ClubhouseApi{
     }
     const url = 'update_username'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -203,8 +206,8 @@ export default class ClubhouseApi{
     }
     const url = 'update_name'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -212,16 +215,15 @@ export default class ClubhouseApi{
     })
   }
 
-  refreshToken (refreshToken)
-  {
+  refreshToken (refreshToken) {
     const headers = this.getAuthHeaders()
     const data = {
       refresh: refreshToken,
     }
     const url = 'refresh_token'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -229,15 +231,15 @@ export default class ClubhouseApi{
     })
   }
 
-  updateBio (bio){
+  updateBio (bio) {
     const headers = this.getAuthHeaders()
     const data = {
       bio: bio,
     }
     const url = 'update_bio'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -253,8 +255,8 @@ export default class ClubhouseApi{
     }
     const url = 'accept_speaker_invite'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -270,8 +272,8 @@ export default class ClubhouseApi{
     }
     const url = 'reject_speaker_invite'
 
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))
@@ -287,8 +289,8 @@ export default class ClubhouseApi{
       unraise_hands: unraise,
     }
     const url = 'audience_reply'
-    return new Promise((resolve,reject) => {
-      ajax.post(url, data , {
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
         headers,
       })
         .then(res => resolve(res.data))

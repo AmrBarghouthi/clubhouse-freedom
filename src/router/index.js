@@ -32,13 +32,9 @@ export default function ({ store }) {
 
     if (isOnboarding && to.name !== 'auth.onboarding') {
       next({ name: 'auth.onboarding' })
-    }
-
-    else if (!isOnboarding && isWaitlisted && to.name !== 'auth.waitlisted') {
+    } else if (!isOnboarding && isWaitlisted && to.name !== 'auth.waitlisted') {
       next({ name: 'auth.waitlisted' })
-    }
-
-    else {
+    } else {
       next()
     }
   })
