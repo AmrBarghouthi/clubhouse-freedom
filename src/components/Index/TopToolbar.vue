@@ -27,15 +27,25 @@
         flat
         class="smooth-corners q-ml-sm"
       >
-        <q-avatar
-          size="md"
-          square
+        <Avatar
+          :src="$store.getters['auth/profilePhotoUrl']"
+          :name="$store.getters['auth/name']"
+          size="2.3rem"
           @click="$emit('profilephotoclick')"
-        >
-          <img :src="$store.getters['auth/profilePhotoUrl']">
-        </q-avatar>
+        />
       </q-btn>
 
     </div>
   </q-toolbar>
 </template>
+
+<script>
+import Avatar from 'components/Avatar'
+
+export default {
+  name: 'IndexTopToolbar',
+  components: {
+    Avatar,
+  },
+}
+</script>

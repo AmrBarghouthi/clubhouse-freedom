@@ -13,13 +13,13 @@
           :key="speaker.user_id"
           class="text-center"
         >
-          <q-avatar
-            size="60px"
-            square
-            class="smooth-corners"
-          >
-            <img :src="speaker.photo_url" />
-          </q-avatar>
+          <Avatar
+            size="70px"
+            :src="speaker.photo_url"
+            :name="speaker.name"
+            glows
+            :glowing="isSpeakingNow(speaker.user_id)"
+          />
           <div class="q-mt-sm under-photo">
             <q-icon
               v-if="speaker.is_moderator"
@@ -48,13 +48,12 @@
           :key="user.user_id"
           class="text-center"
         >
-          <q-avatar
-            size="60px"
-            square
-            class="smooth-corners"
-          >
-            <img :src="user.photo_url" />
-          </q-avatar>
+          <Avatar
+            size="70px"
+            :src="user.photo_url"
+            :name="user.name"
+            glows
+          />
           <div class="q-mt-sm">
             <span>{{ user.first_name }}</span>
           </div>
@@ -69,13 +68,12 @@
           :key="user.user_id"
           class="text-center"
         >
-          <q-avatar
-            size="60px"
-            square
-            class="smooth-corners"
-          >
-            <img :src="user.photo_url" />
-          </q-avatar>
+          <Avatar
+            size="70px"
+            :src="user.photo_url"
+            :name="user.name"
+            glows
+          />
           <div class="q-mt-sm">
             <span>{{ user.first_name }}</span>
           </div>
@@ -116,9 +114,13 @@
 
 <script>
 import _ from 'lodash'
+import Avatar from 'components/Avatar'
 
 export default {
   name: 'PageRoom',
+  components: {
+    Avatar,
+  },
   data () {
     return {
       roomInfo: {},
@@ -248,9 +250,5 @@ export default {
 .footer {
   display: flex;
   justify-content: space-between;
-}
-
-.font-bold {
-  font-weight: 700;
 }
 </style>

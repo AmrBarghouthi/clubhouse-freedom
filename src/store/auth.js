@@ -35,6 +35,7 @@ export default {
     profilePhotoUrl: state => state.user.photoUrl,
     authToken: state => state.tokens.auth,
     userId: state => state.user.id,
+    name: state => state.user.name,
   },
   mutations: {
     UPDATE_SIGN_IN_ATTEMPT_STATE: (state, response) => {
