@@ -12,7 +12,7 @@ const ajax = Axios.create({
     'CH-Languages':'en-US',
     'CH-Locale':'en_US',
     'Accept':'application/json',
-    'CH-DeviceId':'6B51095C-D0EB-489D-AC84-58B03CE4E481',
+    'CH-DeviceId':'6B11095C-D0EB-439D-AC44-58B04344E481',
   },
 })
 

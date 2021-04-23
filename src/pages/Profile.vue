@@ -17,102 +17,94 @@
           @back="back"
         >
           <template #right>
-            <SettingsBtn @click="tab = 'settings'" />
+            <ProfileSettingsBtn @click="tab = 'settings'" />
           </template>
         </PageHeader>
+
         <div
           v-if="profile"
           class="q-mx-md"
         >
-          <img
+
+          <Avatar
             :src="profile.photo_url"
-            class="photo smooth-corners"
-          >
+            :name="profile.name"
+            size="4.5rem"
+            @click="photoClickHandler"
+          />
 
-          <div class="q-mt-sm text-weight-medium">{{ profile.name }}</div>
-          <div class=" text-grey-9">@{{ profile.username }}</div>
+          <ProfileNameAndUsername
+            :name="profile.name"
+            :username="profile.username"
+            :follows-me="profile.follows_me"
+            class="q-mt-sm"
+          />
 
-          <div class="flex q-mt-sm">
-            <div class="q-mr-md cursor-pointer">
-              <span class="text-h6 text-weight-medium">{{ profile.num_followers }}</span>
-              <span class="q-ml-xs">followers</span>
-            </div>
-            <div class="cursor-pointer">
-              <span class="text-h6 text-weight-medium">{{ profile.num_following }}</span>
-              <span class="q-ml-xs">following</span>
-            </div>
-          </div>
+          <ProfileFollowingAndFollowers
+            :followers-count="profile.num_followers"
+            :following-count="profile.num_following"
+            class="q-mt-sm"
+          />
 
-          <div
+          <ProfileBio
             v-if="profile.bio"
-            class="q-mt-md bio"
-          >
-            {{ profile.bio }}
-          </div>
+            :bio="profile.bio"
+            class="q-mt-lg"
+            @click="bioClickHandler"
+          />
 
-          <div class="social-media-container q-mt-md">
-            <div
-              v-if="profile.twitter"
-              class="q-mr-lg cursor-pointer"
-              @click="openLinkInBrowser(`https://twitter.com/${profile.twitter}`)"
-            >
-              <q-icon
-                name="fab fa-twitter"
-                style="color: #00acee;"
-              />
-              <span class="text-weight-medium q-ml-xs">{{ profile.twitter }}</span>
-            </div>
-            <div
-              v-if="profile.instagram"
-              class="q-mr-lg cursor-pointer"
-              @click="openLinkInBrowser(`https://instagram.com/${profile.instagram}/`)"
-            >
-              <q-icon
-                name="fab fa-instagram"
-                style="color: #e95950;"
-              />
-              <span class="text-weight-medium q-ml-xs">{{ profile.instagram }}</span>
-            </div>
-          </div>
+          <ProfileAddBio
+            v-else-if="canUpdateBio"
+            class="q-mt-xl"
+            @click="bioClickHandler"
+          />
+
+          <ProfileSocialHandleTwitter
+            v-if="profile.twitter"
+            :handle="profile.twitter"
+            class="q-mt-md q-mr-lg inline-block"
+          />
+
+          <ProfileSocialHandleInstagram
+            v-if="profile.instagram"
+            :handle="profile.instagram"
+            class="q-mt-md inline-block"
+          />
 
           <div class="q-mt-xl nominated-by-container">
-            <img
+            <Avatar
               v-if="profile.invited_by_user_profile"
               :src="profile.invited_by_user_profile.photo_url"
-              class="smooth-corners photo-sm q-mr-sm"
-            >
+              :name="profile.invited_by_user_profile.name"
+              size="2.7rem"
+              class="q-mr-sm"
+              clickable
+              @click="goToProfile(profile.invited_by_user_profile.user_id)"
+            />
             <div>
-              <div class="text-grey-7">Joined {{ moment(profile.time_created).format('MMM D, YYYY') }}</div>
-              <div
+              <ProfileJoinedLine :date="profile.time_created" />
+              <ProfileNominatedByLine
                 v-if="profile.invited_by_user_profile"
-                class="text-grey-7"
-              >
-                <span>Nominated by</span>
-                <span
-                  class="text-weight-medium text-black cursor-pointer"
-                  @click="goToProfile(profile.invited_by_user_profile.user_id)"
-                >
-                  {{ profile.invited_by_user_profile.name }}
-                </span>
-              </div>
+                :name="profile.invited_by_user_profile.name"
+                @click="goToProfile(profile.invited_by_user_profile.user_id)"
+              />
             </div>
           </div>
 
-          <div
-            v-if="profile.clubs.length"
-            class="q-mt-lg text-weight-medium text-grey-9"
-          >
-            Member of
-          </div>
-          <div class="q-mt-sm flex">
-            <div
-              v-for="club in profile.clubs"
-              :key="club.club_id"
-            >
-              <img
+          <div v-if="profile.clubs.length">
+            <div class="q-mt-lg q-mb-sm text-weight-medium text-grey-9">
+              Member of
+            </div>
+            <div class="flex">
+              <Avatar
+                v-for="club in profile.clubs"
+                :key="club.club_id"
                 :src="club.photo_url"
-                class="photo-xs q-mr-sm smooth-corners"
-              >
+                :name="club.name"
+                clickable
+                size="2.4rem"
+                class="q-mr-sm q-mb-xs"
+              />
             </div>
           </div>
         </div>
@@ -142,52 +134,122 @@
 
     </q-tab-panels>
 
+    <ProfileUpdateBioDialog
+      v-model="state.isShowingUpdateBioForm"
+      :bio="form.bioUpdate.bio"
+      :busy="state.isUpdatingBio"
+      @bioupdated="$event => form.bioUpdate.bio = $event"
+      @done="bioUpdateDoneHandler"
+    />
+
+    <ProfileUpdatePhotoDialog
+      v-model="state.isShowingUpdatePhotoForm"
+      :photo-url="photoUrl"
+      :name="name"
+      :busy="state.isUpdatingPhoto"
+      @photoUpdated="$event => form.photoUpdate.photo = $event"
+      @done="photoUpdateDoneHandler"
+    />
   </div>
 </template>
 
 <script>
 import chAxios from 'src/ajax'
-import moment from 'moment'
-import { shell } from 'electron'
 
+import Avatar from 'components/Avatar'
 import PageHeader from 'components/PageHeader'
-import SettingsBtn from 'components/Profile/SettingsBtn'
+import ProfileAddBio from 'components/Profile/ProfileAddBio'
+import ProfileBio from 'components/Profile/ProfileBio'
+import ProfileFollowingAndFollowers from 'components/Profile/ProfileFollowingAndFollowers'
+import ProfileJoinedLine from 'components/Profile/ProfileJoinedLine'
+import ProfileNameAndUsername from 'components/Profile/ProfileNameAndUsername'
+import ProfileNominatedByLine from 'components/Profile/ProfileNominatedByLine'
+import ProfileSettingsBtn from 'components/Profile/ProfileSettingsBtn'
+import ProfileSocialHandleInstagram from 'components/Profile/ProfileSocialHandleInstagram'
+import ProfileSocialHandleTwitter from 'components/Profile/ProfileSocialHandleTwitter'
+import ProfileUpdateBioDialog from 'components/Profile/ProfileUpdateBioDialog'
+import ProfileUpdatePhotoDialog from 'components/Profile/ProfileUpdatePhotoDialog'
 
 export default {
   name: 'ProfilePage',
   components: {
+    Avatar,
     PageHeader,
-    SettingsBtn,
+    ProfileAddBio,
+    ProfileBio,
+    ProfileFollowingAndFollowers,
+    ProfileJoinedLine,
+    ProfileNameAndUsername,
+    ProfileNominatedByLine,
+    ProfileSettingsBtn,
+    ProfileSocialHandleInstagram,
+    ProfileSocialHandleTwitter,
+    ProfileUpdateBioDialog,
+    ProfileUpdatePhotoDialog,
   },
   data () {
     return {
       profile: null,
       tab: 'profile',
+      state: {
+        isShowingUpdateBioForm: false,
+        isUpdatingBio: false,
+        isShowingUpdatePhotoForm: false,
+        isUpdatingPhoto: false,
+      },
+      form: {
+        bioUpdate: { bio: null },
+        photoUpdate: { photo: null },
+      },
     }
+  },
+  computed: {
+    headers () {
+      return {
+        Authorization: `Token ${this.$store.getters['auth/authToken']}`,
+        'CH-UserID': this.$store.getters['auth/userId'],
+      }
+    },
+    name () {
+      return this.profile?.name
+    },
+    photoUrl () {
+      return this.profile?.photo_url
+    },
+    isAuthenticatedUserProfile () {
+      return this.profile.user_id === this.$store.getters['auth/userId']
+    },
+    canUpdateBio () {
+      return this.isAuthenticatedUserProfile
+    },
+    canUpdatePhoto () {
+      return this.isAuthenticatedUserProfile
+    },
   },
   watch: {
     '$route.params.userId': {
-      handler () {
-        this.getProfile()
+      handler (val) {
+        this.getProfile(val)
       },
     },
   },
   created () {
-    this.getProfile()
+    this.getProfile(this.$route.params.userId)
   },
   methods: {
-    moment,
-    async getProfile () {
+    async getProfile (userId) {
+      this.profile = null
 
       const data = {
-        user_id: this.$route.params.userId ?? this.$store.getters['auth/userId'],
+        user_id: userId ?? this.$store.getters['auth/userId'],
       }
       const headers = {
         Authorization: `Token ${this.$store.getters['auth/authToken']}`,
         'CH-UserID': this.$store.getters['auth/userId'],
       }
-
-      this.profile = (await chAxios.post('get_profile', data, { headers })).data.user_profile
+      chAxios
+        .post('get_profile', data, { headers })
+        .then(res => this.profile = res?.data?.user_profile ?? null)
     },
     back () {
       this.$router.back()
@@ -196,37 +258,64 @@ export default {
       this.$store.commit('auth/RESET')
       this.$router.push({ name: 'auth.login' })
     },
-    openLinkInBrowser (link) {
-      shell.openExternal(link)
-    },
     goToProfile (userId) {
       this.$router.push({ name: 'profile', params: { userId: userId } })
+    },
+    bioClickHandler () {
+      if (!this.canUpdateBio) return
+
+      this.form.bioUpdate.bio = this.profile.bio
+      this.state.isShowingUpdateBioForm = true
+    },
+    async bioUpdateDoneHandler () {
+      this.state.isUpdatingBio = true
+
+      if (this.profile.bio === this.form.bioUpdate.bio) {
+        this.state.isUpdatingBio = false
+        this.state.isShowingUpdateBioForm = false
+        return
+      }
+
+      chAxios
+        .post('update_bio', { bio: this.form.bioUpdate.bio }, { headers: this.headers })
+        .then(res => { if (res?.data?.success) this.profile.bio = this.form.bioUpdate.bio })
+        .finally(() => {
+          this.state.isShowingUpdateBioForm = false
+          this.state.isUpdatingBio = false
+        })
+    },
+    photoClickHandler () {
+      if (!this.canUpdatePhoto) return
+      this.state.isShowingUpdatePhotoForm = true
+    },
+    async photoUpdateDoneHandler (event) {
+
+      if (!event.photo) {
+        this.state.isShowingUpdatePhotoForm = false
+        return
+      }
+
+      const data = new FormData()
+      data.append('file', event.photo, 'image.jpg')
+
+      chAxios
+        .post('update_photo', data, { headers: this.headers })
+        .then(res => {
+          if (res?.data?.photo_url) {
+            this.profile.photo_url = res.data.photo_url
+            this.$store.commit('auth/UPDATE_PHOTO_URL', res.data.photo_url)
+          }
+        })
+        .finally(() => {
+          this.state.isShowingUpdatePhotoForm = false
+          this.state.isUpdatingPhoto = false
+        })
     },
   },
 }
 </script>
 
-<style scoped>
-.photo {
-  width: 5rem;
-  height: 5rem;
-}
-
-.photo-sm {
-  width: 2.7rem;
-  height: 2.7rem;
-}
-
-.photo-xs {
-  width: 2.4rem;
-  height: 2.4rem;
-}
-
-.bio {
-  font-size: 0.825rem;
-  white-space: pre-line;
-}
-
+<style>
 .nominated-by-container {
   display: flex;
   align-items: center;
@@ -235,5 +324,9 @@ export default {
 .social-media-container {
   display: flex;
   align-items: center;
+}
+
+.inline-block {
+  display: inline-block;
 }
 </style>

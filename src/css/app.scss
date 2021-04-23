@@ -39,3 +39,8 @@
   --smooth-corners: 2.6;
   mask-image: paint(smooth-corners);
 }
+
+.modal-top-raduis-sm {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}

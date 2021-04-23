@@ -61,6 +61,9 @@ export default {
         state.tokens.refresh = data.refresh_token
       }
     },
+    UPDATE_PHOTO_URL (state, photoUrl) {
+      state.user.photoUrl = photoUrl
+    },
     RESET: (state) => {
       Object.assign(state,_.cloneDeep(defaultState))
     },

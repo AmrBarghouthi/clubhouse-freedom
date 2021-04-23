@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div>
+    <div class="left">
       <slot name="left">
         <q-btn
           v-show="backBtn"
@@ -15,11 +15,11 @@
       </slot>
     </div>
 
-    <div class="text-weight-medium">
+    <div class="text-weight-medium middle">
       <slot />
     </div>
 
-    <div>
+    <div class="right">
       <slot name="right">
         <q-btn
           v-show="exitBtn"
@@ -53,8 +53,23 @@ export default {
 
 <style scoped>
 .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
+}
+
+.left {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.middle {
+  text-align: center;
+  height: 3rem;
+}
+
+.right {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>
