@@ -234,6 +234,8 @@ export default {
     this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
     this.$roomController.addListener('invetedToSpeak',this.invitedToSpeakEvent)
     this.$roomController.addListener('roomUpdated',this.updateRoomInfo)
+    this.$roomController.addListener('speakerAdded', this.addSpeaker)
+    this.$roomController.addListener('speakerRemoved', this.removeSpeaker)
 
   },
   beforeDestroy () {},
@@ -291,6 +293,18 @@ export default {
     },
     updateRoomInfo (roomInfo) {
       this.roomInfo = roomInfo
+    },
+    addSpeaker(profile) {
+     const index =  _.findIndex(this.roomInfo.users,(user) => user.user_id == profile.user_id)
+     if (index != -1)
+      this.roomInfo.users[index] = profile
+     else
+      this.roomInfo.users.push(profile)
+    },
+    removeSpeaker(userId) {
+     const index =  _.findIndex(this.roomInfo.users,(user) => user.user_id == userId)
+     if (index != -1)
+      this.roomInfo.users[index].is_speaker = false
     },
     showFailedToJoinNotification () {
       this.$q.notify({
