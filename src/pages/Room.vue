@@ -126,6 +126,32 @@
         </span>
       </div>
     </q-footer>
+    <q-dialog
+      v-model="showInviteDialog"
+      persistent
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{ invite.userName }} invted you to speak</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            flat
+            label="Cancel"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            label="Accept"
+            color="primary"
+            @click="acceptSpeakerInvite"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -140,6 +166,11 @@ export default {
       speakingNowInfo: [],
       mutedUsers: new Set(),
       handRasid: false,
+      showInviteDialog: false,
+      invite: {
+        userName: null,
+        userId: null,
+      },
     }
   },
   computed: {
@@ -178,6 +209,9 @@ export default {
     this.$roomController.addListener('userLeft', this.userLeftEvent)
     this.$roomController.addListener('speakersVolumeUpdadetd',this.speakerUpdateEvent)
     this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
+    this.$roomController.addListener('invetedToSpeak',this.invitedToSpeakEvent)
+    this.$roomController.addListener('roomUpdated',this.updateRoomInfo)
+
   },
   beforeDestroy () {},
   methods: {
@@ -192,6 +226,13 @@ export default {
     leaveRoom () {
       this.$roomController.leaveRoom()
       this.$router.push({ name: 'index' })
+    },
+    invitedToSpeakEvent (userName, userId) {
+      this.invite = {
+        userName,
+        userId,
+      }
+      this.showInviteDialog = true
     },
     userJoindEvent (profile) {
       let notInRoom = true
@@ -222,6 +263,9 @@ export default {
       else
         this.mutedUsers.delete(userId)
     },
+    updateRoomInfo (roomInfo) {
+      this.roomInfo = roomInfo
+    },
     showFailedToJoinNotification () {
       this.$q.notify({
         type: 'negative',
@@ -237,6 +281,9 @@ export default {
     },
     isMuted (userId) {
       return this.mutedUsers.has(userId)
+    },
+    acceptSpeakerInvite () {
+      this.$roomController.acceptSpeakerInvite(this.invite.userId)
     },
   },
 }
