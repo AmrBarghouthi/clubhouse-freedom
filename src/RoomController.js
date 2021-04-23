@@ -162,7 +162,7 @@ export default class RoomController{
       case 'invetedToSpeak':
         this.invetedToSpeakEventListeners.push(callback)
         break
-      case 'speakersVolumeUpdadetd':
+      case 'speakersVolumeUpdated':
         this.rtcEngine.on('groupAudioVolumeIndication', callback)
         break
       case 'userMuteChanged':
