@@ -123,7 +123,7 @@ export default {
     return {
       roomInfo: {},
       speakingNowInfo: [],
-      mutedUsers: [],
+      mutedUsers: new Set(),
     }
   },
   computed: {
@@ -172,10 +172,8 @@ export default {
         }
       }
       if (notInRoom) this.roomInfo.users.push(profile)
-      console.log('user added')
     },
     userLeftEvent (userId) {
-      console.log(`removing ${userId}`)
       for (let i = 0; i < this.roomInfo.users.length; i++) {
         const user = this.roomInfo.users[i]
         if (user.user_id == userId) {
@@ -189,11 +187,10 @@ export default {
       this.speakingNowInfo = speakers
     },
     userMuteUpdatedEvent (userId, muted){
-      const index = this.mutedUsers.indexOf(userId)
-      if (muted && index == -1)
-        this.mutedUsers.push(userId)
-      else if (!muted && index != -1)
-        this.mutedUsers.splice(index,1)
+      if (muted)
+        this.mutedUsers.add(userId)
+      else
+        this.mutedUsers.delete(userId)
     },
     showFailedToJoinNotification () {
       this.$q.notify({
@@ -209,7 +206,7 @@ export default {
       )
     },
     isMuted (userId) {
-      return (this.mutedUsers.find(id => id === userId) !== undefined)
+      return this.mutedUsers.has(userId)
     },
   },
 }
