@@ -226,12 +226,9 @@ export default {
       return this.isAuthenticatedUserProfile
     },
   },
-  watch: {
-    '$route.params.userId': {
-      handler (val) {
-        this.getProfile(val)
-      },
-    },
+  beforeRouteUpdate(to, from, next) {
+    this.getProfile(to.params.userId)
+    next()
   },
   created () {
     this.getProfile(this.$route.params.userId)
