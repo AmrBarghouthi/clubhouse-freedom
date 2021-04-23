@@ -227,7 +227,9 @@ export default {
       this.$router.push({ name: 'profile', params: { userId: userId } })
     },
     bioClickHandler () {
-      if (!this.canUpdateBio) return
+      if (!this.canUpdateBio) {
+        return
+      }
 
       this.form.bioUpdate.bio = this.profile.bio
       this.state.isShowingUpdateBioForm = true
@@ -243,14 +245,20 @@ export default {
 
       this.$clubhouseApi
         .updateBio(this.form.bioUpdate.bio)
-        .then(data => { if (data?.success) this.profile.bio = this.form.bioUpdate.bio })
+        .then(data => {
+          if (data?.success) {
+            this.profile.bio = this.form.bioUpdate.bio
+          }
+        })
         .finally(() => {
           this.state.isShowingUpdateBioForm = false
           this.state.isUpdatingBio = false
         })
     },
     photoClickHandler () {
-      if (!this.canUpdatePhoto) return
+      if (!this.canUpdatePhoto) {
+        return
+      }
       this.state.isShowingUpdatePhotoForm = true
     },
     async photoUpdateDoneHandler (event) {

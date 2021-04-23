@@ -208,16 +208,23 @@ export default {
         const isSpeaker = user.is_speaker
         const isFollowedBySpeakers = user.is_followed_by_speaker && !isSpeaker
 
-        if (isSpeaker) return 'speakers'
-        if (isFollowedBySpeakers) return 'followedBySpeakers'
+        if (isSpeaker) {
+          return 'speakers'
+        }
+
+        if (isFollowedBySpeakers) {
+          return 'followedBySpeakers'
+        }
+
         return 'others'
       })
     },
     userIsNotASpeaker () {
-      if (this.usersCategorized.speakers)
+      if (this.usersCategorized.speakers) {
         return this.usersCategorized.speakers.find(speaker => speaker.user_id === this.userId) === undefined
-      else
+      } else {
         return false
+      }
     },
   },
   async created () {
@@ -230,10 +237,10 @@ export default {
     }
     this.$roomController.addListener('userJoined', this.userJoindEvent)
     this.$roomController.addListener('userLeft', this.userLeftEvent)
-    this.$roomController.addListener('speakersVolumeUpdated',this.speakerUpdateEvent)
-    this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
-    this.$roomController.addListener('invetedToSpeak',this.invitedToSpeakEvent)
-    this.$roomController.addListener('roomUpdated',this.updateRoomInfo)
+    this.$roomController.addListener('speakersVolumeUpdated', this.speakerUpdateEvent)
+    this.$roomController.addListener('userMuteChanged', this.userMuteUpdatedEvent)
+    this.$roomController.addListener('invetedToSpeak', this.invitedToSpeakEvent)
+    this.$roomController.addListener('roomUpdated', this.updateRoomInfo)
 
   },
   beforeDestroy () {},
@@ -265,7 +272,9 @@ export default {
           notInRoom = false
         }
       }
-      if (notInRoom) this.roomInfo.users.push(profile)
+      if (notInRoom) {
+        this.roomInfo.users.push(profile)
+      }
     },
     userLeftEvent (userId) {
       for (let i = 0; i < this.roomInfo.users.length; i++) {
@@ -278,16 +287,18 @@ export default {
     },
     speakerUpdateEvent (speakers) {
       const localUser = _.find(speakers, speaker => speaker.uid === 0)
-      if (localUser !== undefined)
+      if (localUser !== undefined) {
         this.localUserSpeaking = localUser.volume != 0
-      else
+      } else {
         this.speakingNowInfo = speakers
+      }
     },
-    userMuteUpdatedEvent (userId, muted){
-      if (muted)
+    userMuteUpdatedEvent (userId, muted) {
+      if (muted) {
         this.mutedUsers.add(userId)
-      else
+      } else {
         this.mutedUsers.delete(userId)
+      }
     },
     updateRoomInfo (roomInfo) {
       this.roomInfo = roomInfo
@@ -302,7 +313,7 @@ export default {
     },
     isSpeakingNow (userId) {
       return (
-        userId==this.userId?(this.localUserSpeaking && !this.isMuted(userId)): this.speakingNowInfo.find(user => user.uid === userId) !== undefined
+        userId == this.userId ? (this.localUserSpeaking && !this.isMuted(userId)) : this.speakingNowInfo.find(user => user.uid === userId) !== undefined
       )
     },
     isMuted (userId) {

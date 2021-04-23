@@ -40,7 +40,11 @@
           width="1000"
           height="1000"
         >
-          <image :href="src" width="1000" height="1000" />
+          <image
+            :href="src"
+            width="1000"
+            height="1000"
+          />
         </pattern>
 
       </svg>
@@ -60,11 +64,11 @@ export default {
   props: {
     size: {
       type: String,
-      default: "4rem"
+      default: '4rem',
     },
     src: {
       type: String,
-      default: null
+      default: null,
     },
     name: {
       type: String,
@@ -97,14 +101,14 @@ export default {
 
       return segments[0][0] + segments[segments.length - 1][0]
     },
-    mainPathTransform() {
-      return this.glows ? "translate(50 50) scale(0.9)" : "";
+    mainPathTransform () {
+      return this.glows ? 'translate(50 50) scale(0.9)' : ''
     },
-    mainPathFill() {
-      return this.src ? `url(#${this.src})` : "#f2f2f2";
+    mainPathFill () {
+      return this.src ? `url(#${this.src})` : '#f2f2f2'
     },
   },
-};
+}
 </script>
 
 <style>

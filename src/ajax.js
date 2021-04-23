@@ -27,9 +27,9 @@ const showNetworkErrorNotification =  () => {
 }
 const showNetworkErrorNotificationThrottled = _.throttle(showNetworkErrorNotification, 5000)
 
-ajax.interceptors.response.use((response) => {
+ajax.interceptors.response.use(response => {
   return response
-}, (error) => {
+}, error => {
   if (_.get(error, 'message') === 'Network Error') {
     showNetworkErrorNotificationThrottled()
   }

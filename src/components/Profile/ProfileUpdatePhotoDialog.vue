@@ -81,13 +81,15 @@ export default {
       this.$refs.fileInput.click()
     },
     fileSelectedHandler (event) {
-      if (!event.target.files[0]) return
+      if (!event.target.files[0]) {
+        return
+      }
 
       this.photo = event.target.files[0]
 
       const reader = new FileReader()
 
-      reader.onload = (e) => {
+      reader.onload = e => {
         this.newPhotoSrc = e.target.result
       }
 
