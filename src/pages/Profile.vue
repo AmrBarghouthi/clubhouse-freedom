@@ -33,6 +33,7 @@
             :src="profile.photo_url"
             :name="profile.name"
             size="4.5rem"
+            style="display: inline-block;"
             @click="photoClickHandler"
           />
 
