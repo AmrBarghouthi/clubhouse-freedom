@@ -101,27 +101,29 @@
           round
           class="bg-alabaster q-mr-md"
         />
-        <q-btn
-          v-if="!handRasid"
-          rounded
-          no-caps
-          icon="o_pan_tool"
-          flat
-          round
-          class="bg-alabaster"
-          :disable="!roomInfo.is_handraise_enabled"
-          @click="raiseHand"
-        />
-        <q-btn
-          v-else
-          rounded
-          no-caps
-          icon="pan_tool"
-          flat
-          round
-          class="bg-alabaster"
-          @click="unraiseHand"
-         />
+        <span v-if="userIsNotASpeaker">
+          <q-btn
+            v-if="!handRasid"
+            rounded
+            no-caps
+            icon="o_pan_tool"
+            flat
+            round
+            class="bg-alabaster"
+            :disable="!roomInfo.is_handraise_enabled"
+            @click="raiseHand"
+          />
+          <q-btn
+            v-else
+            rounded
+            no-caps
+            icon="pan_tool"
+            flat
+            round
+            class="bg-alabaster"
+            @click="unraiseHand"
+          />
+        </span>
       </div>
     </q-footer>
   </q-page>
@@ -157,6 +159,12 @@ export default {
         return 'others'
       })
     },
+    userIsNotASpeaker() {
+      if(this.usersCategorized.speakers)
+        return this.usersCategorized.speakers.find(speaker => speaker.user_id === this.userId) === undefined
+      else
+        return false
+    }
   },
   async created () {
     const room = this.$route.params.roomCode
