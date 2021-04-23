@@ -90,6 +90,7 @@ export default class RoomController{
             this.roomEndedEvent()
             break
           case 'invite_speaker':
+            this.invetedToSpeakEvent(m.message.from_name, m.message.from_user_id)
             break
           default:
             console.log({pubnubMessage: m})
@@ -119,6 +120,9 @@ export default class RoomController{
       this.leaveRoom()
   }
 
+  invetedToSpeakEvent (fromName, fromUserId) {
+    this.invetedToSpeakEventListeners.forEach(cb => cb(fromName, fromUserId))
+  }
   addListener (event,callback)
   {
     switch (event) {
