@@ -15,17 +15,9 @@ const routes = [
         component: () => import('pages/Room.vue'),
       },
       {
-        path: 'profile',
+        path: 'profile/:userId?',
         name: 'profile',
-        redirect: { name: 'profile.index' },
-        component: () => import('pages/Profile/ProfileBase'),
-        children: [
-          {
-            path: '',
-            name: 'profile.index',
-            component: () => import ('pages/Profile/ProfileIndex'),
-          },
-        ],
+        component: () => import('pages/Profile'),
       },
     ],
   },
