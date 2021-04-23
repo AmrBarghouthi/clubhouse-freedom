@@ -231,4 +231,37 @@ export default class ClubhouseApi{
     })
   }
 
+  acceptSpeakerInvite (channel, userId) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      channel,
+      user_id: userId,
+    }
+    const url = 'accept_speaker_invite'
+
+    return new Promise((resolve,reject) => {
+      ajax.post(url, data , {
+        headers,
+      })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
+  rejectSpeakerInvite (channel, userId) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      channel,
+      user_id: userId,
+    }
+    const url = 'reject_speaker_invite'
+
+    return new Promise((resolve,reject) => {
+      ajax.post(url, data , {
+        headers,
+      })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
 }
