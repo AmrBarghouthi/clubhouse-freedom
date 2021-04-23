@@ -10,7 +10,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.7.0",
     "agora-electron-sdk": "^3.3.2-hotfix.4",
     "agora-rtc-sdk": "^3.5.0",
     "axios": "^0.21.1",

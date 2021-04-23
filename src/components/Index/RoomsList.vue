@@ -46,16 +46,24 @@
                 <span>{{ user.name}}</span>
                 <q-icon
                   v-if="user.is_speaker"
-                  name="o_sms"
+                  :name="ionChatbubbleEllipsesOutline"
                   class="q-ml-xs"
                 />
               </div>
-              <div class="q-mt-sm text-grey">
-                <q-icon name="person" />
-                <span>{{room.num_all}}</span>
-                <span class="q-mx-sm">/</span>
-                <q-icon name="o_sms" />
-                <span class="q-ml-xs">{{room.num_speakers}}</span>
+              <div class="q-mt-sm text-grey room-bottom">
+                <q-icon
+                  :name="ionPerson"
+                  style="width: 0.8rem;"
+                />
+                <div class="q-ml-xs">{{ room.num_all }}</div>
+
+                <div class="q-mx-sm">/</div>
+
+                <q-icon
+                  :name="ionChatbubbleEllipses"
+                  style="width: 0.8rem;"
+                />
+                <div class="q-ml-xs">{{ room.num_speakers }}</div>
               </div>
             </div>
           </div>
@@ -67,6 +75,7 @@
 
 <script>
 import Avatar from 'components/Avatar'
+import { ionChatbubbleEllipses, ionChatbubbleEllipsesOutline, ionPerson } from '@quasar/extras/ionicons-v5'
 
 export default {
   name: 'IndexRoomsList',
@@ -83,6 +92,13 @@ export default {
       default: false,
     },
   },
+  data () {
+    return {
+      ionChatbubbleEllipses,
+      ionChatbubbleEllipsesOutline,
+      ionPerson,
+    }
+  },
 }
 </script>
 
@@ -96,6 +112,11 @@ export default {
 .rooms-list-avatar-second {
   position: absolute;
   transform: translate(50%, 50%);
+}
+
+.room-bottom {
+  display: flex;
+  align-items: center;
 }
 
 .no-rooms-text {
