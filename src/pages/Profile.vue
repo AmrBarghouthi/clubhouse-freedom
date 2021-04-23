@@ -59,16 +59,10 @@
             @click="bioClickHandler"
           />
 
-          <ProfileSocialHandleTwitter
-            v-if="profile.twitter"
-            :handle="profile.twitter"
-            class="q-mt-md q-mr-lg inline-block"
-          />
-
-          <ProfileSocialHandleInstagram
-            v-if="profile.instagram"
-            :handle="profile.instagram"
-            class="q-mt-md inline-block"
+          <ProfileSocialHandles
+            :twitter="profile.twitter"
+            :instagram="profile.instagram"
+            class="q-mt-md"
           />
 
         <ProfileNominatedByBlock
@@ -152,8 +146,7 @@ import ProfileFollowingAndFollowers from 'components/Profile/ProfileFollowingAnd
 import ProfileNameAndUsername from 'components/Profile/ProfileNameAndUsername'
 import ProfileNominatedByBlock from 'components/Profile/ProfileNominatedByBlock'
 import ProfileSettingsBtn from 'components/Profile/ProfileSettingsBtn'
-import ProfileSocialHandleInstagram from 'components/Profile/ProfileSocialHandleInstagram'
-import ProfileSocialHandleTwitter from 'components/Profile/ProfileSocialHandleTwitter'
+import ProfileSocialHandles from 'components/Profile/ProfileSocialHandles'
 import ProfileUpdateBioDialog from 'components/Profile/ProfileUpdateBioDialog'
 import ProfileUpdatePhotoDialog from 'components/Profile/ProfileUpdatePhotoDialog'
 
@@ -168,8 +161,7 @@ export default {
     ProfileNameAndUsername,
     ProfileNominatedByBlock,
     ProfileSettingsBtn,
-    ProfileSocialHandleInstagram,
-    ProfileSocialHandleTwitter,
+    ProfileSocialHandles,
     ProfileUpdateBioDialog,
     ProfileUpdatePhotoDialog,
   },
@@ -297,9 +289,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.inline-block {
-  display: inline-block;
-}
-</style>
