@@ -87,6 +87,20 @@ export default class ClubhouseApi{
     })
   }
 
+  getChannel (channel) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      channel,
+      channel_id: null,
+    }
+    const url = 'get_channel'
+    return new Promise((resolve,reject) => {
+      ajax.post(url, data,{ headers })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
   updatePhoto (photo) {
     const headers = this.getAuthHeaders()
     const data = new FormData()

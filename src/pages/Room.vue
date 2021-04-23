@@ -101,16 +101,79 @@
           round
           class="bg-alabaster q-mr-md"
         />
-        <q-btn
-          rounded
-          no-caps
-          icon="fas fa-fist-raised"
-          flat
-          round
-          class="bg-alabaster"
-        />
+        <span v-if="userIsNotASpeaker">
+          <q-btn
+            v-if="!handRasid"
+            rounded
+            no-caps
+            icon="o_pan_tool"
+            flat
+            round
+            class="bg-alabaster"
+            :disable="!roomInfo.is_handraise_enabled"
+            @click="raiseHand"
+          />
+          <q-btn
+            v-else
+            rounded
+            no-caps
+            icon="pan_tool"
+            flat
+            round
+            class="bg-alabaster"
+            @click="unraiseHand"
+          />
+        </span>
+        <span v-else>
+          <q-btn
+            v-if="isMuted(userId)"
+            rounded
+            no-caps
+            icon="fas fa-microphone-slash"
+            flat
+            round
+            class="bg-alabaster"
+            @click="unmute"
+          />
+          <q-btn
+            v-else
+            rounded
+            no-caps
+            icon="fas fa-microphone"
+            flat
+            round
+            class="bg-alabaster"
+            @click="mute"
+          />
+        </span>
       </div>
     </q-footer>
+    <q-dialog
+      v-model="showInviteDialog"
+      persistent
+    >
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{ invite.userName }} invted you to speak</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            flat
+            label="Cancel"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            label="Accept"
+            color="primary"
+            @click="acceptSpeakerInvite"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -123,7 +186,14 @@ export default {
     return {
       roomInfo: {},
       speakingNowInfo: [],
+      localUserSpeaking: false,
       mutedUsers: new Set(),
+      handRasid: false,
+      showInviteDialog: false,
+      invite: {
+        userName: null,
+        userId: null,
+      },
     }
   },
   computed: {
@@ -143,6 +213,12 @@ export default {
         return 'others'
       })
     },
+    userIsNotASpeaker () {
+      if (this.usersCategorized.speakers)
+        return this.usersCategorized.speakers.find(speaker => speaker.user_id === this.userId) === undefined
+      else
+        return false
+    },
   },
   async created () {
     const room = this.$route.params.roomCode
@@ -156,12 +232,30 @@ export default {
     this.$roomController.addListener('userLeft', this.userLeftEvent)
     this.$roomController.addListener('speakersVolumeUpdadetd',this.speakerUpdateEvent)
     this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
+    this.$roomController.addListener('invetedToSpeak',this.invitedToSpeakEvent)
+    this.$roomController.addListener('roomUpdated',this.updateRoomInfo)
+
   },
   beforeDestroy () {},
   methods: {
+    raiseHand () {
+      this.$roomController.raiseHand()
+      this.handRasid = true
+    },
+    unraiseHand () {
+      this.$roomController.unraiseHand()
+      this.handRasid = false
+    },
     leaveRoom () {
       this.$roomController.leaveRoom()
       this.$router.push({ name: 'index' })
+    },
+    invitedToSpeakEvent (userName, userId) {
+      this.invite = {
+        userName,
+        userId,
+      }
+      this.showInviteDialog = true
     },
     userJoindEvent (profile) {
       let notInRoom = true
@@ -183,14 +277,20 @@ export default {
       }
     },
     speakerUpdateEvent (speakers) {
-      if (_.find(speakers, speaker => speaker.uid === 0)) return
-      this.speakingNowInfo = speakers
+      const localUser = _.find(speakers, speaker => speaker.uid === 0)
+      if (localUser !== undefined)
+        this.localUserSpeaking = localUser.volume != 0
+      else
+        this.speakingNowInfo = speakers
     },
     userMuteUpdatedEvent (userId, muted){
       if (muted)
         this.mutedUsers.add(userId)
       else
         this.mutedUsers.delete(userId)
+    },
+    updateRoomInfo (roomInfo) {
+      this.roomInfo = roomInfo
     },
     showFailedToJoinNotification () {
       this.$q.notify({
@@ -202,11 +302,20 @@ export default {
     },
     isSpeakingNow (userId) {
       return (
-        this.speakingNowInfo.find(user => user.uid === userId) !== undefined
+        userId==this.userId?(this.localUserSpeaking && !this.isMuted(userId)): this.speakingNowInfo.find(user => user.uid === userId) !== undefined
       )
     },
     isMuted (userId) {
       return this.mutedUsers.has(userId)
+    },
+    acceptSpeakerInvite () {
+      this.$roomController.acceptSpeakerInvite(this.invite.userId)
+    },
+    mute () {
+      this.$roomController.setMute(true)
+    },
+    unmute () {
+      this.$roomController.setMute(false)
     },
   },
 }
