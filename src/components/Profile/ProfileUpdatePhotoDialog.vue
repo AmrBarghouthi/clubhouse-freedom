@@ -88,7 +88,6 @@ export default {
       const reader = new FileReader()
 
       reader.onload = (e) => {
-        console.log(this.$refs.avatar)
         this.newPhotoSrc = e.target.result
       }
 
