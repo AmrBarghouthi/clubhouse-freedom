@@ -18,7 +18,7 @@
             square
             class="smooth-corners"
           >
-            <img :src="speaker.photo_url">
+            <img :src="speaker.photo_url" />
           </q-avatar>
           <div class="q-mt-sm under-photo">
             <q-icon
@@ -29,9 +29,12 @@
             />
             <span
               style="margin-left: 3px;"
-              :class="{'font-bold': isSpeakingNow(speaker.user_id)}"
+              :class="{ 'font-bold': isSpeakingNow(speaker.user_id) }"
             >
-              {{ speaker.first_name }}
+              {{ speaker.first_name }}  <q-icon
+                v-if="isMuted(speaker.user_id)"
+                name="fas fa-microphone-slash"
+              />
             </span>
           </div>
         </div>
@@ -50,7 +53,7 @@
             square
             class="smooth-corners"
           >
-            <img :src="user.photo_url">
+            <img :src="user.photo_url" />
           </q-avatar>
           <div class="q-mt-sm">
             <span>{{ user.first_name }}</span>
@@ -71,7 +74,7 @@
             square
             class="smooth-corners"
           >
-            <img :src="user.photo_url">
+            <img :src="user.photo_url" />
           </q-avatar>
           <div class="q-mt-sm">
             <span>{{ user.first_name }}</span>
@@ -113,8 +116,6 @@
 
 <script>
 import _ from 'lodash'
-import chAxios from 'src/ajax'
-import AgoraRtcEngine from 'agora-electron-sdk'
 
 export default {
   name: 'PageRoom',
@@ -122,13 +123,18 @@ export default {
     return {
       roomInfo: {},
       speakingNowInfo: [],
+      mutedUsers: new Set(),
     }
   },
   computed: {
-    userId () { return this.$store.getters['auth/userId'] },
-    authToken () { return this.$store.getters['auth/authToken'] },
+    userId () {
+      return this.$store.getters['auth/userId']
+    },
+    authToken () {
+      return this.$store.getters['auth/authToken']
+    },
     usersCategorized () {
-      return _.groupBy(this.roomInfo.users || [], (user) => {
+      return _.groupBy(this.roomInfo.users || [], user => {
         const isSpeaker = user.is_speaker
         const isFollowedBySpeakers = user.is_followed_by_speaker && !isSpeaker
 
@@ -138,69 +144,53 @@ export default {
       })
     },
   },
-  created () {
-    const agoraAppId = '938de3e8055e42b281bb8c6f69c21f78'
-    this.rtcEngine = new AgoraRtcEngine()
-    this.rtcEngine.initialize(agoraAppId, 0xFFFFFFFE)
-    this.rtcEngine.disableVideo()
-    this.joinRoom()
+  async created () {
+    const room = this.$route.params.roomCode
+    try {
+      this.roomInfo = await this.$roomController.joinRoom(room)
+    } catch (error) {
+      this.showFailedToJoinNotification()
+      this.leaveRoom()
+    }
+    this.$roomController.addListener('userJoined', this.userJoindEvent)
+    this.$roomController.addListener('userLeft', this.userLeftEvent)
+    this.$roomController.addListener('speakersVolumeUpdadetd',this.speakerUpdateEvent)
+    this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
   },
-  beforeDestroy () {
-    this.rtcEngine.release()
-  },
+  beforeDestroy () {},
   methods: {
-    joinRoom () {
-      const url = 'join_channel'
-      const data = { channel: this.$route.params.roomCode }
-      const headers = { 'Authorization': `Token ${this.authToken}`, 'CH-UserID': this.userId }
-
-      chAxios
-        .post(url, data, { headers })
-        .then(res => {
-          this.roomInfo = res.data
-          this.joinRoomAgora()
-        })
-        .catch(() => {
-          this.showFailedToJoinNotification()
-          this.leaveRoomClubhouse()
-          this.$router.push({ name: 'index' })
-        })
-    },
-    async joinRoomAgora () {
-      const token = this.roomInfo.token
-      const channel = this.roomInfo.channel
-      const info = ''
-      const uid = this.userId
-
-      const joinChannelReturnCode = await this.rtcEngine.joinChannel(token, channel, info, uid)
-
-      if (joinChannelReturnCode < 0 ) {
-        this.showFailedToJoinNotification()
-        this.leaveRoomClubhouse()
-        this.$router.push({ name: 'index' })
-      }
-      this.rtcEngine.enableAudioVolumeIndication(200, 3, false)
-
-      const callback = speakers => {
-        if (_.find(speakers, speaker => speaker.uid === 0)) return
-        this.speakingNowInfo = speakers
-      }
-      this.rtcEngine.on('groupAudioVolumeIndication', callback)
-    },
-    async leaveRoom () {
-      await this.leaveRoomAgora()
-      await this.leaveRoomClubhouse()
+    leaveRoom () {
+      this.$roomController.leaveRoom()
       this.$router.push({ name: 'index' })
     },
-    async leaveRoomAgora () {
-      return await this.rtcEngine.leaveChannel()
+    userJoindEvent (profile) {
+      let notInRoom = true
+      for (let i = 0; i < this.roomInfo.users.length; i++) {
+        const user = this.roomInfo.users[i]
+        if (user.user_id == profile.user_id) {
+          notInRoom = false
+        }
+      }
+      if (notInRoom) this.roomInfo.users.push(profile)
     },
-    async leaveRoomClubhouse () {
-      const url = 'leave_channel'
-      const data = { channel: this.$route.params.roomCode, channel_id: null }
-      const headers = { 'Authorization': `Token ${this.authToken}`, 'CH-UserID': this.userId }
-
-      await chAxios.post(url, data, { headers })
+    userLeftEvent (userId) {
+      for (let i = 0; i < this.roomInfo.users.length; i++) {
+        const user = this.roomInfo.users[i]
+        if (user.user_id == userId) {
+          this.roomInfo.users.splice(i, 1)
+          break
+        }
+      }
+    },
+    speakerUpdateEvent (speakers) {
+      if (_.find(speakers, speaker => speaker.uid === 0)) return
+      this.speakingNowInfo = speakers
+    },
+    userMuteUpdatedEvent (userId, muted){
+      if (muted)
+        this.mutedUsers.add(userId)
+      else
+        this.mutedUsers.delete(userId)
     },
     showFailedToJoinNotification () {
       this.$q.notify({
@@ -211,7 +201,12 @@ export default {
       })
     },
     isSpeakingNow (userId) {
-      return this.speakingNowInfo.find(user => user.uid === userId) !== undefined
+      return (
+        this.speakingNowInfo.find(user => user.uid === userId) !== undefined
+      )
+    },
+    isMuted (userId) {
+      return this.mutedUsers.has(userId)
     },
   },
 }
