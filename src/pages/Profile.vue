@@ -10,7 +10,7 @@
 
       <q-tab-panel
         name="profile"
-        class="q-pa-none full-height"
+        class="full-height q-pa-none"
       >
         <PageHeader
           back-btn
@@ -26,7 +26,7 @@
 
         <div
           v-if="profile"
-          class="q-mx-md"
+          class="q-px-md"
         >
 
           <Avatar
@@ -98,7 +98,7 @@
       <q-tab-panel
         v-if="isAuthenticatedUserProfile"
         name="settings"
-        class="full-height"
+        class="full-height q-pa-none"
       >
         <PageHeader
           exit-btn
@@ -106,16 +106,17 @@
         >
           SETTINGS
         </PageHeader>
-
-        <q-btn
-          class="q-mt-xl q-mx-md full-width text-red"
-          label="Log out"
-          color="white"
-          dense
-          no-caps
-          unelevated
-          @click="signOut"
-        />
+        <div class="q-px-md">
+          <q-btn
+            class="q-mt-xl q-mx-md full-width text-red"
+            label="Log out"
+            color="white"
+            dense
+            no-caps
+            unelevated
+            @click="signOut"
+          />
+        </div>
       </q-tab-panel>
 
     </q-tab-panels>

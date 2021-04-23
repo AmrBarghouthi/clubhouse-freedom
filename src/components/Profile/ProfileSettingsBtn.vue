@@ -1,9 +1,11 @@
 <template>
   <q-btn
-    icon="tune"
+    icon="ion-cog"
     flat
     :ripple="false"
     round
+    size="1.1rem"
+    padding="none"
     @click="$emit('click')"
   />
 </template>

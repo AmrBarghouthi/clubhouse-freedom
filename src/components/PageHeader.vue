@@ -1,18 +1,16 @@
 <template>
   <div class="container">
     <div class="left">
-      <slot name="left">
-        <q-btn
-          v-show="backBtn"
-          icon="chevron_left"
-          flat
-          :ripple="false"
-          round
-          size="lg"
-          padding="none"
-          @click="$emit('back')"
-        />
-      </slot>
+      <q-btn
+        v-if="backBtn"
+        icon="chevron_left"
+        flat
+        :ripple="false"
+        round
+        size="lg"
+        padding="none"
+        @click="$emit('back')"
+      />
     </div>
 
     <div class="text-weight-medium middle">
@@ -22,7 +20,7 @@
     <div class="right">
       <slot name="right">
         <q-btn
-          v-show="exitBtn"
+          v-if="exitBtn"
           icon="close"
           flat
           :ripple="false"
@@ -54,22 +52,22 @@ export default {
 <style scoped>
 .container {
   position: relative;
+  min-height: 3.5rem;
 }
 
 .left {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: .5rem;
 }
 
 .middle {
   text-align: center;
-  height: 3rem;
+  padding-top: .6rem;
 }
 
 .right {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 </style>
