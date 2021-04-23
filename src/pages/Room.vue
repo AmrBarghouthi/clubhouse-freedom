@@ -186,6 +186,7 @@ export default {
     return {
       roomInfo: {},
       speakingNowInfo: [],
+      localUserSpeaking: false,
       mutedUsers: new Set(),
       handRasid: false,
       showInviteDialog: false,
@@ -276,8 +277,11 @@ export default {
       }
     },
     speakerUpdateEvent (speakers) {
-      if (_.find(speakers, speaker => speaker.uid === 0)) return
-      this.speakingNowInfo = speakers
+      const localUser = _.find(speakers, speaker => speaker.uid === 0)
+      if (localUser !== undefined)
+        this.localUserSpeaking = localUser.volume != 0
+      else
+        this.speakingNowInfo = speakers
     },
     userMuteUpdatedEvent (userId, muted){
       if (muted)
@@ -298,7 +302,7 @@ export default {
     },
     isSpeakingNow (userId) {
       return (
-        this.speakingNowInfo.find(user => user.uid === userId) !== undefined
+        userId==this.userId?(this.localUserSpeaking && !this.isMuted(userId)): this.speakingNowInfo.find(user => user.uid === userId) !== undefined
       )
     },
     isMuted (userId) {

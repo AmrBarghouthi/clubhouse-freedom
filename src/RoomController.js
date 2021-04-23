@@ -61,7 +61,7 @@ export default class RoomController{
         info,
         uid,
       )
-      this.rtcEngine.enableAudioVolumeIndication(200, 3, false)
+      this.rtcEngine.enableAudioVolumeIndication(200, 3, true)
       if (joinChannelReturnCode < 0)
         reject('faild to join agora channel with code '+joinChannelReturnCode)
       else
