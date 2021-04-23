@@ -127,6 +127,17 @@ export default class RoomController{
     this.invetedToSpeakEventListeners.forEach(cb => cb(fromName, fromUserId))
   }
 
+  acceptSpeakerInvite (inviterId) {
+    this.clubhouseApi.acceptSpeakerInvite(this.currentRoom, inviterId)
+    .then(() => this.rejoinRoom())
+  }
+
+  rejoinRoom() {
+    const room = this.currentRoom
+    this.leaveRoom()
+    .then(() => this.joinRoom(room))
+  }
+
   addListener (event,callback)
   {
     switch (event) {
