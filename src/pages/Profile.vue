@@ -69,13 +69,13 @@
             class="q-mt-md"
           />
 
-        <ProfileNominatedByBlock
-          :nominated-by-name="profile.invited_by_user_profile.name"
-          :nominated-by-photo-url="profile.invited_by_user_profile.photo_url"
-          :joined-date="profile.time_created"
-          class="q-mt-xl"
-          @click="goToProfile(profile.invited_by_user_profile.user_id)"
-        />
+          <ProfileNominatedByBlock
+            :nominated-by-name="profile.invited_by_user_profile.name"
+            :nominated-by-photo-url="profile.invited_by_user_profile.photo_url"
+            :joined-date="profile.time_created"
+            class="q-mt-xl"
+            @click="goToProfile(profile.invited_by_user_profile.user_id)"
+          />
 
           <div v-if="profile.clubs.length">
             <div class="q-mt-lg q-mb-sm text-weight-medium text-grey-9">
@@ -171,6 +171,10 @@ export default {
     ProfileUpdateBioDialog,
     ProfileUpdatePhotoDialog,
   },
+  beforeRouteUpdate (to, from, next) {
+    this.getProfile(to.params.userId)
+    next()
+  },
   data () {
     return {
       profile: null,
@@ -209,10 +213,6 @@ export default {
     canUpdatePhoto () {
       return this.isAuthenticatedUserProfile
     },
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.getProfile(to.params.userId)
-    next()
   },
   created () {
     this.getProfile(this.$route.params.userId)
