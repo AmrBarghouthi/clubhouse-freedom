@@ -105,5 +105,6 @@ export default {
 <style>
 .stretch-modal {
   min-height: calc(100vh - 2rem) !important;
+  min-width: 100vw;
 }
 </style>
