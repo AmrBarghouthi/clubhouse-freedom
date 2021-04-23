@@ -2,6 +2,7 @@ import Axios from 'axios'
 import _ from 'lodash'
 import { Notify } from 'quasar'
 import router from 'src/router'
+import { machineIdSync } from 'node-machine-id'
 
 const ajax = Axios.create({
   baseURL: 'https://www.clubhouseapi.com/api',
@@ -12,7 +13,7 @@ const ajax = Axios.create({
     'CH-Languages':'en-US',
     'CH-Locale':'en_US',
     'Accept':'application/json',
-    'CH-DeviceId':'6B51095C-D0EB-489D-AC84-58B03CE4E481',
+    'CH-DeviceId': machineIdSync(true),
   },
 })
 

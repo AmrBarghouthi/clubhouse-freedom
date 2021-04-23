@@ -46,7 +46,6 @@
 
 <script>
 import _ from 'lodash'
-import chAxios from 'src/ajax'
 
 import EventsList from 'components/Index/EventsList'
 import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
@@ -77,17 +76,13 @@ export default {
   },
   methods: {
     async getRoomsAndEvents () {
-      const headers = {
-        Authorization: `Token ${this.$store.getters['auth/authToken']}`,
-        'CH-UserID': this.$store.getters['auth/userId'],
-      }
 
       this.state.isBusy = true
-      const res = await chAxios.get('get_channels', { headers })
+      const res = await this.$clubhouseApi.getChannels()
       this.state.isBusy = false
 
-      if (_.has(res, 'data.channels')) this.rooms = res.data.channels
-      if (_.has(res, 'data.events')) this.events = res.data.events
+      if (_.has(res, 'channels')) this.rooms = res.channels
+      if (_.has(res, 'events')) this.events = res.events
 
     },
     enterRoom (roomCode) {
