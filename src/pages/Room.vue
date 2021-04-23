@@ -124,6 +124,28 @@
             @click="unraiseHand"
           />
         </span>
+        <span v-else>
+          <q-btn
+            v-if="isMuted(userId)"
+            rounded
+            no-caps
+            icon="fas fa-microphone-slash"
+            flat
+            round
+            class="bg-alabaster"
+            @click="unmute"
+          />
+          <q-btn
+            v-else
+            rounded
+            no-caps
+            icon="fas fa-microphone"
+            flat
+            round
+            class="bg-alabaster"
+            @click="mute"
+          />
+        </span>
       </div>
     </q-footer>
     <q-dialog
@@ -284,6 +306,12 @@ export default {
     },
     acceptSpeakerInvite () {
       this.$roomController.acceptSpeakerInvite(this.invite.userId)
+    },
+    mute () {
+      this.$roomController.setMute(true)
+    },
+    unmute () {
+      this.$roomController.setMute(false)
     },
   },
 }

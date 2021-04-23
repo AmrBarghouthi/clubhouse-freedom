@@ -9,6 +9,7 @@ export default class RoomController{
     this.autoLeaveOnRoomEnded = autoLeaveOnRoomEnded
     this.clearListenersOnRoomLeave = clearListenersOnRoomLeave
     this.handRaisd = false
+    this.muted = true
     this.clearAllEventListeners()
   }
 
@@ -46,7 +47,7 @@ export default class RoomController{
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(agoraAppId, 0xfffffffe)
       this.rtcEngine.disableVideo()
-      this.rtcEngine.muteLocalAudioStream(true)
+      this.setMute(true)
 
       if (this.currentRoom == room){
         resolve()
@@ -133,6 +134,9 @@ export default class RoomController{
     this.roomUpdateListeners.forEach(cb => cb(roomInfo))
   }
 
+  muteChangedEvent (userId, mute) {
+    this.muteChangedListeners.forEach(cb => cb(userId, mute))
+  }
   acceptSpeakerInvite (inviterId) {
     this.clubhouseApi.acceptSpeakerInvite(this.currentRoom, inviterId)
       .then(() => this.rejoinRoom())
@@ -164,13 +168,19 @@ export default class RoomController{
         break
       case 'userMuteChanged':
         this.rtcEngine.on('userMuteAudio', callback)
+        this.muteChangedListeners.push(callback)
         break
       case 'roomUpdated':
         this.roomUpdateListeners.push(callback)
         break
     }
   }
+  setMute (mute) {
+    this.muteChangedEvent(this.getUserId(), mute)
+    this.rtcEngine.muteLocalAudioStream(mute)
+    this.muted = mute
 
+  }
   clearAllEventListeners ()
   {
     this.userJoindEventListeners = []
@@ -178,6 +188,7 @@ export default class RoomController{
     this.roomEndedEventListeners = []
     this.invetedToSpeakEventListeners = []
     this.roomUpdateListeners = []
+    this.muteChangedListeners = []
   }
   async leaveRoom (){
     return new Promise((resolve,reject) => {
