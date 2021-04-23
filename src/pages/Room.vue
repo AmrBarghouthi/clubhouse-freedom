@@ -230,7 +230,7 @@ export default {
     }
     this.$roomController.addListener('userJoined', this.userJoindEvent)
     this.$roomController.addListener('userLeft', this.userLeftEvent)
-    this.$roomController.addListener('speakersVolumeUpdadetd',this.speakerUpdateEvent)
+    this.$roomController.addListener('speakersVolumeUpdated',this.speakerUpdateEvent)
     this.$roomController.addListener('userMuteChanged',this.userMuteUpdatedEvent)
     this.$roomController.addListener('invetedToSpeak',this.invitedToSpeakEvent)
     this.$roomController.addListener('roomUpdated',this.updateRoomInfo)
