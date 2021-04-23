@@ -142,8 +142,6 @@
 </template>
 
 <script>
-import chAxios from 'src/ajax'
-
 import Avatar from 'components/Avatar'
 import PageHeader from 'components/PageHeader'
 import ProfileAddBio from 'components/Profile/ProfileAddBio'
@@ -192,12 +190,6 @@ export default {
     }
   },
   computed: {
-    headers () {
-      return {
-        Authorization: `Token ${this.$store.getters['auth/authToken']}`,
-        'CH-UserID': this.$store.getters['auth/userId'],
-      }
-    },
     name () {
       return this.profile?.name
     },
@@ -221,16 +213,8 @@ export default {
     async getProfile (userId) {
       this.profile = null
 
-      const data = {
-        user_id: userId ?? this.$store.getters['auth/userId'],
-      }
-      const headers = {
-        Authorization: `Token ${this.$store.getters['auth/authToken']}`,
-        'CH-UserID': this.$store.getters['auth/userId'],
-      }
-      chAxios
-        .post('get_profile', data, { headers })
-        .then(res => this.profile = res?.data?.user_profile ?? null)
+      this.$clubhouseApi.getProfile(userId ?? this.$store.getters['auth/userId'])
+        .then(data => this.profile = data?.user_profile ?? null)
     },
     back () {
       this.$router.back()
@@ -257,9 +241,9 @@ export default {
         return
       }
 
-      chAxios
-        .post('update_bio', { bio: this.form.bioUpdate.bio }, { headers: this.headers })
-        .then(res => { if (res?.data?.success) this.profile.bio = this.form.bioUpdate.bio })
+      this.$clubhouseApi
+        .updateBio(this.form.bioUpdate.bio)
+        .then(data => { if (data?.success) this.profile.bio = this.form.bioUpdate.bio })
         .finally(() => {
           this.state.isShowingUpdateBioForm = false
           this.state.isUpdatingBio = false
@@ -278,15 +262,12 @@ export default {
 
       this.state.isUpdatingPhoto = true
 
-      const data = new FormData()
-      data.append('file', event.photo, 'image.jpg')
-
-      chAxios
-        .post('update_photo', data, { headers: this.headers })
-        .then(res => {
-          if (res?.data?.photo_url) {
-            this.profile.photo_url = res.data.photo_url
-            this.$store.commit('auth/UPDATE_PHOTO_URL', res.data.photo_url)
+      this.$clubhouseApi
+        .updatePhoto(event.photo)
+        .then(data => {
+          if (data?.photo_url) {
+            this.profile.photo_url = data.photo_url
+            this.$store.commit('auth/UPDATE_PHOTO_URL', data.photo_url)
           }
         })
         .finally(() => {
