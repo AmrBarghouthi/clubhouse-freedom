@@ -100,6 +100,12 @@ export default class RoomController {
           case 'invite_speaker':
             this.invetedToSpeakEvent(m.message.from_name, m.message.from_user_id)
             break
+          case 'add_speaker':
+            this.speakerAddedEvent(m.message.user_profile)
+            break
+          case 'remove_speaker':
+            this.speakerRemovedEvent(m.message.user_id)
+            break
           default:
             console.log({ pubnubMessage: m })
         }
@@ -144,6 +150,10 @@ export default class RoomController {
       .then(() => this.updateRoom())
   }
 
+  speakerRemovedEvent (userId) {
+    this.speakerRemovedListeners.forEach(cb => cb(userId))
+  }
+
   updateRoom () {
     this.clubhouseApi.getChannel(this.currentRoom)
       .then(data => this.roomUpdatedEvent(data))
@@ -173,6 +183,11 @@ export default class RoomController {
       case 'roomUpdated':
         this.roomUpdateListeners.push(callback)
         break
+      case 'speakerAdded':
+        this.speakerAddedEventListeners.push(callback)
+        break
+      case 'speakerRemoved':
+        this.speakerRemovedListeners.push(callback)
     }
   }
 
@@ -183,6 +198,10 @@ export default class RoomController {
 
   }
 
+  speakerAddedEvent (profile) {
+    this.speakerAddedEventListeners.forEach(cb => cb(profile))
+  }
+
   clearAllEventListeners () {
     this.userJoindEventListeners = []
     this.userLeftEventListeners = []
@@ -190,6 +209,8 @@ export default class RoomController {
     this.invetedToSpeakEventListeners = []
     this.roomUpdateListeners = []
     this.muteChangedListeners = []
+    this.speakerAddedEventListeners = []
+    this.speakerRemovedListeners = []
   }
 
   async leaveRoom () {
