@@ -31,62 +31,33 @@ module.exports = {
   },
 
   rules: {
-    'prefer-promise-reject-errors': [
-      'off',
-    ],
-    'indent': [
-      'warn',
-      2,
-      {
-        SwitchCase: 1,
-      }
-    ],
-    'vue/html-indent': [
-        'warn',
-        2,
-    ],
-    'linebreak-style': [
-        'warn',
-        'unix',
-    ],
-    'quotes': [
-        'warn',
-        'single',
-    ],
-    'semi': [
-      'warn',
-      'never',
-    ],
-    'comma-dangle': [
-      'warn',
-      'always-multiline',
-    ],
-    'space-before-function-paren': [
-      'warn',
-      'always',
-    ],
-    'keyword-spacing': [
-        'warn',
-    ],
-    'no-trailing-spaces': [
-        'warn',
-    ],
-    'vue/max-attributes-per-line': [
-      'warn',
-      {
-        'singleline': 1,
-        'multiline': {
-            'max': 1,
-            'allowFirstLine': false,
-        },
-      },
-    ],
-    "vue/html-closing-bracket-newline": [
-      "warn", {
-        "singleline": "never",
-        "multiline": "always"
-      },
-    ],
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'array-bracket-spacing': ['warn'],
+    'array-bracket-newline': ['warn', 'consistent'],
+    'arrow-parens': ['warn', 'as-needed'],
+    'arrow-spacing': ['warn'],
+    'brace-style': ['warn'],
+    'comma-dangle': ['warn', 'always-multiline'],
+    'comma-spacing': ['warn'],
+    'curly': ['warn'],
+    'block-spacing': ['warn'],
+    'indent': ['warn', 2, { SwitchCase: 1 }],
+    'keyword-spacing': ['warn'],
+    'linebreak-style': ['warn'],
+    "lines-between-class-members": ['warn'],
+    'newline-per-chained-call': ['warn'],
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-trailing-spaces': ['warn'],
+    'object-curly-newline': ['warn', { 'consistent': true }],
+    'object-curly-spacing': ['warn', 'always'],
+    'prefer-promise-reject-errors': ['off'],
+    'quotes': ['warn', 'single'],
+    'semi': ['warn', 'never'],
+    'space-before-blocks': ['warn'],
+    'space-before-function-paren': ['warn'],
+    'space-infix-ops': ['warn'],
+    "template-curly-spacing": ["warn"],
+    "vue/html-closing-bracket-newline": ["warn", { "singleline": "never", "multiline": "always" }],
+    'vue/html-indent': ['warn', 2],
+    'vue/max-attributes-per-line': ['warn', { 'singleline': 1, 'multiline': { 'max': 1, 'allowFirstLine': false } }],
   },
 }
