@@ -24,22 +24,19 @@
           <q-item-label dir="auto">{{ room.topic }}</q-item-label>
           <div class="flex q-mt-sm q-gutter-md">
             <div class="rooms-list-avatars-container">
-              <q-avatar
+              <Avatar
                 v-if="room.users.length > 1"
+                :src="room.users[1].photo_url"
+                :name="room.users[1].name"
                 size="2.5rem"
-                class="rooms-list-avatar-second smooth-corners"
-                square
-              >
-                <img :src="room.users[1].photo_url">
-              </q-avatar>
-              <q-avatar
+                class="rooms-list-avatar-second"
+              />
+              <Avatar
                 v-if="room.users.length > 0"
+                :src="room.users[0].photo_url"
+                :name="room.users[0].name"
                 size="2.5rem"
-                class="rooms-list-avatar-first smooth-corners"
-                square
-              >
-                <img :src="room.users[0].photo_url">
-              </q-avatar>
+              />
             </div>
             <div>
               <div
@@ -69,8 +66,13 @@
 </template>
 
 <script>
+import Avatar from 'components/Avatar'
+
 export default {
   name: 'IndexRoomsList',
+  components: {
+    Avatar,
+  },
   props: {
     rooms: {
       type: Array,
