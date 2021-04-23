@@ -8,6 +8,7 @@ export default class RoomController{
     this.clubhouseApi = clubhouseApi
     this.autoLeaveOnRoomEnded = autoLeaveOnRoomEnded
     this.clearListenersOnRoomLeave = clearListenersOnRoomLeave
+    this.handRaisd = false
     this.clearAllEventListeners()
   }
 
@@ -19,12 +20,13 @@ export default class RoomController{
   async joinRoom (room){
     return new Promise((resolve,reject)=>{
       // joining on clubhouse server
-
       this.clubhouseApi.joinChannel(room)
         .then(async res => {
           try {
             await Promise.all([ this.joinRoomAgora(res.token,room),
               this.joinPubnub(room,res.pubnub_token,res.pubnub_origin,res.pubnub_heartbeat_value,res.pubnub_heartbeat_intreval)])
+            if (this.currentRoom !== room)
+              this.handRaisd = false
             this.currentRoom = room
             resolve(res)
           } catch (error) {
@@ -37,6 +39,7 @@ export default class RoomController{
     })
 
   }
+
   joinRoomAgora (token,room){
     return new Promise((resolve,reject) => {
       const agoraAppId = '938de3e8055e42b281bb8c6f69c21f78'
@@ -123,6 +126,7 @@ export default class RoomController{
   invetedToSpeakEvent (fromName, fromUserId) {
     this.invetedToSpeakEventListeners.forEach(cb => cb(fromName, fromUserId))
   }
+
   addListener (event,callback)
   {
     switch (event) {
@@ -179,4 +183,16 @@ export default class RoomController{
       }
     })
   }
+
+  raiseHand () {
+    this.clubhouseApi.audienceReply(this.currentRoom, true, false)
+    this.handRaisd = true
+  }
+
+  unraiseHand () {
+    this.clubhouseApi.audienceReply(this.currentRoom, false, true)
+    this.handRaisd = false
+  }
+
+
 };

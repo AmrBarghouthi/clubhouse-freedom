@@ -102,13 +102,26 @@
           class="bg-alabaster q-mr-md"
         />
         <q-btn
+          v-if="!handRasid"
           rounded
           no-caps
-          icon="fas fa-fist-raised"
+          icon="o_pan_tool"
           flat
           round
           class="bg-alabaster"
+          :disable="!roomInfo.is_handraise_enabled"
+          @click="raiseHand"
         />
+        <q-btn
+          v-else
+          rounded
+          no-caps
+          icon="pan_tool"
+          flat
+          round
+          class="bg-alabaster"
+          @click="unraiseHand"
+         />
       </div>
     </q-footer>
   </q-page>
@@ -124,6 +137,7 @@ export default {
       roomInfo: {},
       speakingNowInfo: [],
       mutedUsers: new Set(),
+      handRasid: false,
     }
   },
   computed: {
@@ -159,6 +173,14 @@ export default {
   },
   beforeDestroy () {},
   methods: {
+    raiseHand() {
+      this.$roomController.raiseHand()
+      this.handRasid = true
+    },
+    unraiseHand() {
+      this.$roomController.unraiseHand()
+      this.handRasid = false
+    },
     leaveRoom () {
       this.$roomController.leaveRoom()
       this.$router.push({ name: 'index' })
