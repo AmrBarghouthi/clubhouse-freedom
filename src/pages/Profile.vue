@@ -71,25 +71,13 @@
             class="q-mt-md inline-block"
           />
 
-          <div class="q-mt-xl nominated-by-container">
-            <Avatar
-              v-if="profile.invited_by_user_profile"
-              :src="profile.invited_by_user_profile.photo_url"
-              :name="profile.invited_by_user_profile.name"
-              size="2.7rem"
-              class="q-mr-sm"
-              clickable
-              @click="goToProfile(profile.invited_by_user_profile.user_id)"
-            />
-            <div>
-              <ProfileJoinedLine :date="profile.time_created" />
-              <ProfileNominatedByLine
-                v-if="profile.invited_by_user_profile"
-                :name="profile.invited_by_user_profile.name"
-                @click="goToProfile(profile.invited_by_user_profile.user_id)"
-              />
-            </div>
-          </div>
+        <ProfileNominatedByBlock
+          :nominated-by-name="profile.invited_by_user_profile.name"
+          :nominated-by-photo-url="profile.invited_by_user_profile.photo_url"
+          :joined-date="profile.time_created"
+          class="q-mt-xl"
+          @click="goToProfile(profile.invited_by_user_profile.user_id)"
+        />
 
           <div v-if="profile.clubs.length">
             <div class="q-mt-lg q-mb-sm text-weight-medium text-grey-9">
@@ -161,9 +149,8 @@ import PageHeader from 'components/PageHeader'
 import ProfileAddBio from 'components/Profile/ProfileAddBio'
 import ProfileBio from 'components/Profile/ProfileBio'
 import ProfileFollowingAndFollowers from 'components/Profile/ProfileFollowingAndFollowers'
-import ProfileJoinedLine from 'components/Profile/ProfileJoinedLine'
 import ProfileNameAndUsername from 'components/Profile/ProfileNameAndUsername'
-import ProfileNominatedByLine from 'components/Profile/ProfileNominatedByLine'
+import ProfileNominatedByBlock from 'components/Profile/ProfileNominatedByBlock'
 import ProfileSettingsBtn from 'components/Profile/ProfileSettingsBtn'
 import ProfileSocialHandleInstagram from 'components/Profile/ProfileSocialHandleInstagram'
 import ProfileSocialHandleTwitter from 'components/Profile/ProfileSocialHandleTwitter'
@@ -178,9 +165,8 @@ export default {
     ProfileAddBio,
     ProfileBio,
     ProfileFollowingAndFollowers,
-    ProfileJoinedLine,
     ProfileNameAndUsername,
-    ProfileNominatedByLine,
+    ProfileNominatedByBlock,
     ProfileSettingsBtn,
     ProfileSocialHandleInstagram,
     ProfileSocialHandleTwitter,
@@ -313,16 +299,6 @@ export default {
 </script>
 
 <style>
-.nominated-by-container {
-  display: flex;
-  align-items: center;
-}
-
-.social-media-container {
-  display: flex;
-  align-items: center;
-}
-
 .inline-block {
   display: inline-block;
 }
