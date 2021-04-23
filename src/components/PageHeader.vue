@@ -53,6 +53,7 @@ export default {
 .container {
   position: relative;
   min-height: 3.5rem;
+  min-width: 100%;
 }
 
 .left {
