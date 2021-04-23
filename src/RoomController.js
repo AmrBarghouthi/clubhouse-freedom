@@ -139,13 +139,12 @@ export default class RoomController{
   }
   acceptSpeakerInvite (inviterId) {
     this.clubhouseApi.acceptSpeakerInvite(this.currentRoom, inviterId)
-      .then(() => this.rejoinRoom())
+      .then(() => this.updateRoom())
   }
 
-  rejoinRoom () {
-    const room = this.currentRoom
-    this.leaveRoom()
-      .then(() => this.joinRoom(room).then(roomInfo => this.roomUpdatedEvent(roomInfo)))
+  updateRoom () {
+    this.clubhouseApi.getChannel(this.currentRoom)
+      .then((data) => this.roomUpdatedEvent(data))
   }
 
   addListener (event,callback)
