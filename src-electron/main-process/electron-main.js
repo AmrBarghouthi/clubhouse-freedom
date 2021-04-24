@@ -23,6 +23,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
+    minWidth: 320,
     useContentSize: true,
     webPreferences: {
       // Change from /quasar.conf.js > electron > nodeIntegration;
@@ -37,6 +38,7 @@ function createWindow () {
     },
   })
 
+  mainWindow.removeMenu()
   mainWindow.loadURL(process.env.APP_URL,{ userAgent: 'clubhouse/269 (iPhone; iOS 13.5.1; Scale/3.00)' })
 
   mainWindow.on('closed', () => {
