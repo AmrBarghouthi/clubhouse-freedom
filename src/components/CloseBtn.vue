@@ -1,6 +1,6 @@
 <template>
   <q-icon
-    :name="ionCogOutline"
+    :name="ionCloseOutline"
     role="button"
     :size="size"
     class="cursor-pointer"
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { ionCogOutline } from '@quasar/extras/ionicons-v5'
+import { ionCloseOutline } from '@quasar/extras/ionicons-v5'
 
 export default {
   props: {
@@ -20,7 +20,7 @@ export default {
   },
   data () {
     return {
-      ionCogOutline,
+      ionCloseOutline,
     }
   },
 }

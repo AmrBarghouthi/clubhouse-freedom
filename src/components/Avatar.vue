@@ -1,5 +1,8 @@
 <template>
-  <div @click="$emit('click')">
+  <div
+    :style="`height: ${size};`"
+    @click="$emit('click')"
+  >
     <div
       class="container"
       :style="`height: ${size}; width: ${size}; font-size: ${size}`"

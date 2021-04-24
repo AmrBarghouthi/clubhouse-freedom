@@ -3,8 +3,9 @@
     view="hHh lpR fFf"
     class="bg-alabaster"
   >
-    <q-header class="bg-alabaster text-black q-mx-sm">
+    <q-header class="bg-alabaster text-black">
       <TopToolbar
+        class="q-mt-md q-mb-sm q-mx-md"
         @profilephotoclick="goToProfile"
       />
     </q-header>

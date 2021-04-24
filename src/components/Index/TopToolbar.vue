@@ -1,45 +1,59 @@
 <template>
-  <q-toolbar>
-    <q-btn
-      flat
-      round
-      icon="search"
-      size="md"
+  <div class="container">
+    <q-icon
+      :name="ionSearchOutline"
+      class="cursor-pointer"
+      role="button"
+      size="1.7rem"
+      @click="$emit('searchclick')"
     />
-    <q-space />
-    <div>
-      <q-btn
-        flat
-        round
-        icon="o_date_range"
-        size="md"
-        outline
-      />
-      <q-btn
-        flat
-        round
-        icon="o_notifications"
-        size="md"
-        outline
-      />
-      <q-btn
-        padding="none"
-        flat
-        class="smooth-corners q-ml-sm"
-      >
-        <Avatar
-          :src="$store.getters['auth/profilePhotoUrl']"
-          :name="$store.getters['auth/name']"
-          size="2.3rem"
-          @click="$emit('profilephotoclick')"
-        />
-      </q-btn>
 
-    </div>
-  </q-toolbar>
+    <q-space />
+
+    <q-icon
+      :name="ionMailOpenOutline"
+      size="1.7rem"
+      class="q-mx-md cursor-pointer"
+      role="button"
+      @click="$emit('invitesclick')"
+    />
+
+    <q-icon
+      :name="ionCalendarOutline"
+      size="1.7rem"
+      class="q-mx-md cursor-pointer"
+      role="button"
+      @click="$emit('eventsclick')"
+    />
+
+    <q-icon
+      :name="ionNotificationsOutline"
+      size="1.7rem"
+      class="q-mx-md cursor-pointer"
+      role="button"
+      @click="$emit('notificationclick')"
+    />
+
+    <Avatar
+      :src="$store.getters['auth/profilePhotoUrl']"
+      :name="$store.getters['auth/name']"
+      size="1.9rem"
+      class="q-ml-md cursor-pointer"
+      role="button"
+      @click="$emit('profilephotoclick')"
+    />
+
+  </div>
 </template>
 
 <script>
+import {
+  ionCalendarOutline,
+  ionMailOpenOutline,
+  ionNotificationsOutline,
+  ionSearchOutline,
+} from '@quasar/extras/ionicons-v5'
+
 import Avatar from 'components/Avatar'
 
 export default {
@@ -47,5 +61,20 @@ export default {
   components: {
     Avatar,
   },
+  data () {
+    return {
+      ionCalendarOutline,
+      ionMailOpenOutline,
+      ionNotificationsOutline,
+      ionSearchOutline,
+    }
+  },
 }
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  align-items: center;
+}
+</style>

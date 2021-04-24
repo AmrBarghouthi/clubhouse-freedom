@@ -105,7 +105,9 @@
           exit-btn
           @exit="tab = 'profile'"
         >
-          SETTINGS
+          <span class="text-weight-medium">
+            SETTINGS
+          </span>
         </PageHeader>
         <div class="q-px-md">
           <q-btn

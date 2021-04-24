@@ -1,31 +1,25 @@
 <template>
-  <div class="container">
+  <div class="container q-mx-md q-pt-md q-mb-sm">
     <div class="left">
-      <q-btn
-        v-if="backBtn"
-        icon="chevron_left"
-        flat
-        :ripple="false"
-        round
-        size="lg"
-        padding="none"
-        @click="$emit('back')"
-      />
+      <slot name="left">
+        <BackBtn
+          v-if="backBtn"
+          style="width: .7rem;"
+          class="cursor-pointer"
+          @click="$emit('back')"
+        />
+      </slot>
     </div>
 
-    <div class="text-weight-medium middle">
-      <slot />
+    <div class="middle">
+      <slot/>
     </div>
 
     <div class="right">
       <slot name="right">
-        <q-btn
+        <CloseBtn
           v-if="exitBtn"
-          icon="close"
-          flat
-          :ripple="false"
-          round
-          padding="none"
+          class="cursor-pointer"
           @click="$emit('exit')"
         />
       </slot>
@@ -34,8 +28,15 @@
 </template>
 
 <script>
+import BackBtn from 'components/BackBtn'
+import CloseBtn from 'components/CloseBtn'
+
 export default {
   name: 'PageHeader',
+  components: {
+    BackBtn,
+    CloseBtn,
+  },
   props: {
     backBtn: {
       type: Boolean,
@@ -52,23 +53,15 @@ export default {
 <style scoped>
 .container {
   position: relative;
-  min-height: 3.5rem;
-  min-width: 100%;
-}
-
-.left {
-  position: absolute;
-  top: .5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .middle {
-  text-align: center;
-  padding-top: .6rem;
-}
-
-.right {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
