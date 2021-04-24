@@ -331,29 +331,25 @@ export default class ClubhouseApi {
     })
   }
 
-  getFollowing(userId, pageSize = 50, page = 1) {
+  getFollowing (userId, pageSize = 50, page = 1) {
     const headers = this.getAuthHeaders()
     const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
     const url = `get_following?${query}`
     return new Promise((resolve, reject) => {
-      ajax.get(url,{
-        headers
-      })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+      ajax.get(url, { headers })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
-  getFollowers(userId, pageSize = 50, page = 1) {
+  getFollowers (userId, pageSize = 50, page = 1) {
     const headers = this.getAuthHeaders()
     const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
     const url = `get_followers?${query}`
     return new Promise((resolve, reject) => {
-      ajax.get(url,{
-        headers
-      })
-      .then(res => resolve(res.data))
-      .catch(err => reject(err))
+      ajax.get(url, { headers })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
     })
   }
 
