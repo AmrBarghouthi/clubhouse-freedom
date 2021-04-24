@@ -227,23 +227,24 @@ export default {
       }
     },
   },
-  async created () {
-    const room = this.$route.params.roomCode
-    try {
-      this.roomInfo = await this.$roomController.joinRoom(room)
-    } catch (error) {
-      this.showFailedToJoinNotification()
-      this.leaveRoom()
-    }
-    this.$roomController.addListener('userJoined', this.userJoindEvent)
-    this.$roomController.addListener('userLeft', this.userLeftEvent)
-    this.$roomController.addListener('speakersVolumeUpdated', this.speakerUpdateEvent)
-    this.$roomController.addListener('userMuteChanged', this.userMuteUpdatedEvent)
-    this.$roomController.addListener('invetedToSpeak', this.invitedToSpeakEvent)
-    this.$roomController.addListener('roomUpdated', this.updateRoomInfo)
-    this.$roomController.addListener('speakerAdded', this.addSpeaker)
-    this.$roomController.addListener('speakerRemoved', this.removeSpeaker)
-
+  created () {
+    this.$roomController
+      .joinRoom(this.$route.params.roomCode)
+      .then(data => {
+        this.roomInfo = data
+        this.$roomController.addListener('userJoined', this.userJoindEvent)
+        this.$roomController.addListener('userLeft', this.userLeftEvent)
+        this.$roomController.addListener('speakersVolumeUpdated', this.speakerUpdateEvent)
+        this.$roomController.addListener('userMuteChanged', this.userMuteUpdatedEvent)
+        this.$roomController.addListener('invetedToSpeak', this.invitedToSpeakEvent)
+        this.$roomController.addListener('roomUpdated', this.updateRoomInfo)
+        this.$roomController.addListener('speakerAdded', this.addSpeaker)
+        this.$roomController.addListener('speakerRemoved', this.removeSpeaker)
+      })
+      .catch(() => {
+        this.showFailedToJoinNotification()
+        this.leaveRoom()
+      })
   },
   beforeDestroy () {},
   methods: {

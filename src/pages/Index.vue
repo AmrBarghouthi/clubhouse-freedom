@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
-
 import EventsList from 'components/Index/EventsList'
 import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
 import RoomsList from 'components/Index/RoomsList'
@@ -76,18 +74,16 @@ export default {
   },
   methods: {
     async getRoomsAndEvents () {
-
       this.state.isBusy = true
-      const res = await this.$clubhouseApi.getChannels()
-      this.state.isBusy = false
-
-      if (_.has(res, 'channels')) {
-        this.rooms = res.channels
-      }
-      if (_.has(res, 'events')) {
-        this.events = res.events
-      }
-
+      this.$clubhouseApi
+        .getChannels()
+        .then(data => {
+          this.rooms = data?.channels
+          this.events = data?.events
+        })
+        .finally(() => {
+          this.state.isBusy = false
+        })
     },
     enterRoom (roomCode) {
       this.$router.push({ name: 'room', params: { roomCode: roomCode } })
