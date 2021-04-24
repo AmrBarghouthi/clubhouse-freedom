@@ -297,4 +297,64 @@ export default class ClubhouseApi {
         .catch(err => reject(err))
     })
   }
+
+  follow (userId, userIds = null, source = 4, sourceTopicId = null) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      source_topic_id: sourceTopicId,
+      user_ids: userIds,
+      user_id: userId,
+      source: source,
+    }
+    const url = 'follow'
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
+        headers,
+      })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
+  unfollow (userId) {
+    const headers = this.getAuthHeaders()
+    const data = {
+      user_id: userId,
+    }
+    const url = 'unfollow'
+    return new Promise((resolve, reject) => {
+      ajax.post(url, data, {
+        headers,
+      })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowing(userId, pageSize = 50, page = 1) {
+    const headers = this.getAuthHeaders()
+    const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
+    const url = `get_following?${query}`
+    return new Promise((resolve, reject) => {
+      ajax.get(url,{
+        headers
+      })
+      .then(res => resolve(res.data))
+      .catch(err => reject(err))
+    })
+  }
+
+  getFollowers(userId, pageSize = 50, page = 1) {
+    const headers = this.getAuthHeaders()
+    const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
+    const url = `get_followers?${query}`
+    return new Promise((resolve, reject) => {
+      ajax.get(url,{
+        headers
+      })
+      .then(res => resolve(res.data))
+      .catch(err => reject(err))
+    })
+  }
+
 }
