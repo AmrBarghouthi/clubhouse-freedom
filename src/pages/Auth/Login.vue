@@ -73,6 +73,15 @@ export default {
             this.hasRequstedSmsVerificationCode = true
           }
         })
+        .catch(err => {
+          if (err?.response?.data?.error_message !== null) {
+            this.$q.notify({
+              message: err.response.data.error_message,
+              color: 'negative',
+              position: 'top',
+            })
+          }
+        })
         .finally(() => this.isBusy = false)
     },
     signInResendSms () {
