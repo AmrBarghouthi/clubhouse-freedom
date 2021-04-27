@@ -1,30 +1,26 @@
 <template>
   <div>
-    <q-btn
-      v-if="stage === 'AWAITING_VERIFICATION_CODE'"
-      icon="chevron_left"
-      class="absolute"
-      flat
-      :ripple="false"
-      dense
-      round
-      fab
+    <BackBtn
+      v-if="hasRequstedSmsVerificationCode"
+      class="auth-login-back-btn"
       @click="signInRestart"
     />
     <div class="q-mx-auto q-px-md centered">
       <PhoneNumberForm
-        v-show="stage === 'NEW'"
+        v-if="!hasRequstedSmsVerificationCode"
+        transition-show="slide-right"
         class="q-mx-auto full-width"
-        :busy="state.isBusy"
-        :loading="state.isBusy"
+        :busy="isBusy"
+        :loading="isBusy"
         @submit="signInGetSms($event)"
       />
       <SmsVerificationCodeForm
-        v-show="stage === 'AWAITING_VERIFICATION_CODE'"
+        v-else
+        transition-show="slide-right"
         class="q-mx-auto full-width"
-        :busy="state.isBusy"
-        :loading="state.isBusy"
-        :attempts-remaining="numberOfSmsVerificationAttemptsRemaining"
+        :busy="isBusy"
+        :loading="isBusy"
+        :attempts-remaining="numberOfAttemptsRemaining"
         @submit="signInComplete"
         @resend-sms="signInResendSms"
         @get-via-call="signInGetCall"
@@ -35,107 +31,150 @@
 </template>
 
 <script>
+import BackBtn from 'components/BackBtn'
 import PhoneNumberForm from 'components/Auth/Login/PhoneNumberForm'
 import SmsVerificationCodeForm from 'components/Auth/Login/SmsVerificationCodeForm'
 
 export default {
   name: 'AuthLoginPage',
   components: {
+    BackBtn,
     PhoneNumberForm,
     SmsVerificationCodeForm,
   },
   data () {
     return {
-      state: {
-        isBusy: false,
-      },
+      isBusy: false,
       phoneNumber: '',
       verificationCode: '',
+      hasRequstedSmsVerificationCode: false,
+      numberOfAttemptsRemaining: null,
     }
-  },
-  computed: {
-    hasRequstedSmsVerificationCode () {
-      return this.$store.getters['auth/hasRequstedSmsVerificationCode']
-    },
-    numberOfSmsVerificationAttemptsRemaining () {
-      return this.$store.getters['auth/numberOfSmsVerificationAttemptsRemaining']
-    },
-    isVerified () {
-      return this.$store.getters['auth/isVerified']
-    },
-    stage () {
-      if (this.hasRequstedSmsVerificationCode && this.numberOfSmsVerificationAttemptsRemaining !== 0) {
-        return 'AWAITING_VERIFICATION_CODE'
-      } else {
-        return 'NEW'
-      }
-    },
-  },
-  watch: {
-    numberOfSmsVerificationAttemptsRemaining (newVal) {
-      if (newVal !== 0) {
-        return
-      }
-
-      this.signInRestart()
-
-      this.$q.notify({
-        message: 'Too many varification attempts. You may use a different number of try again.',
-        color: 'negative',
-        position: 'top',
-      })
-    },
-    isVerified (newVal) {
-      if (newVal) {
-        this.$router.push({ name: 'index' })
-      }
-    },
   },
   mounted () {
     this.signInRestart()
-    if (this.$route.query.isBlocked) {
-      this.$router.replace({ query: { isBlocked: false } })
-      this.$q.notify({
-        message: 'This account is blocked.',
-        color: 'negative',
-        position: 'top',
-      })
-    }
   },
   methods: {
-    signInGetSms (phoneNumber) {
-      this.phoneNumber = phoneNumber
-      this.state.isBusy = true
-      return this.$clubhouseApi.startPhoneNumberAuth(phoneNumber)
-        .then(res => this.$store.commit('auth/UPDATE_SIGN_IN_ATTEMPT_STATE', res))
-        .finally(() => this.state.isBusy = false)
-    },
-    signInResendSms () {
-      this.state.isBusy = true
-      return this.$clubhouseApi.resendPhoneNumberAuth(this.phoneNumber)
-        .finally(() => this.state.isBusy = false)
-    },
-    signInGetCall () {
-      this.state.isBusy = true
-      return this.$clubhouseApi.callPhoneNumberAuth(this.phoneNumber)
-        .finally(() => this.state.isBusy = false)
-    },
     signInRestart () {
       this.$store.commit('auth/RESET')
-      this.verificationCode = ''
+      this.hasRequstedSmsVerificationCode = null
+      this.verificationCode = null
+      this.numberOfAttemptsRemaining = null
+    },
+    signInGetSms (phoneNumber) {
+      this.phoneNumber = phoneNumber
+      this.isBusy = true
+      this.$clubhouseApi
+        .startPhoneNumberAuth(phoneNumber)
+        .then(res => {
+          if (res?.is_blocked) {
+            this.$router.push({ name: 'auth.blocked' })
+          } else if (res?.success) {
+            this.hasRequstedSmsVerificationCode = true
+          }
+        })
+        .finally(() => this.isBusy = false)
+    },
+    signInResendSms () {
+      this.isBusy = true
+      this.$clubhouseApi
+        .resendPhoneNumberAuth(this.phoneNumber)
+        .then(res => {
+          if (res?.is_blocked) {
+            this.$route.push({ name: 'auth.blocked' })
+          } else if (res?.success) {
+            this.hasRequstedSmsVerificationCode = true
+          }
+        })
+        .finally(() => this.isBusy = false)
+    },
+    signInGetCall () {
+      this.isBusy = true
+      this.$clubhouseApi
+        .callPhoneNumberAuth(this.phoneNumber)
+        .then(res => {
+          if (res?.is_blocked) {
+            this.$route.push({ name: 'auth.blocked' })
+          }
+        })
+        .finally(() => this.isBusy = false)
     },
     signInComplete (verificationCode) {
       this.verificationCode = verificationCode
-      this.state.isBusy = true
-      return this.$clubhouseApi.completePhoneNumberAuth(this.phoneNumber, verificationCode)
-        .then(res => this.$store.commit('auth/UPDATE_COMPLETE_SIGN_IN_ATTEMPT_STATE', res))
-        .finally(() => this.state.isBusy = false)
+      this.isBusy = true
+      this.$clubhouseApi
+        .completePhoneNumberAuth(this.phoneNumber, verificationCode)
+        .then(res => {
+          if (res?.number_of_attempts_remaining !== undefined) {
+            this.onNumberOfAttemptsRemaining(res.number_of_attempts_remaining)
+          } else if (res?.is_verified) {
+            this.$store.commit('auth/SET_SUCCESSFUL_SIGNIN_DATA', res)
+            this.redirectAfterSuccessfulSignIn()
+          }
+        })
+        .finally(() => this.isBusy = false)
+    },
+    onNumberOfAttemptsRemaining (numberOfAttemptsRemaining) {
+      const hasChanged = this.numberOfAttemptsRemaining !== numberOfAttemptsRemaining
+      this.numberOfAttemptsRemaining = numberOfAttemptsRemaining
+
+      if (!hasChanged) {
+        this.$q.notify({
+          message: 'Could\'nt verify your credentials.',
+          color: 'negative',
+          position: 'top',
+        })
+        this.signInRestart()
+        return
+      }
+
+      if (numberOfAttemptsRemaining !== 0) {
+        this.$q.notify({
+          message: `Incorrect verification code. Attemps remaining: ${numberOfAttemptsRemaining}.`,
+          color: 'negative',
+          position: 'top',
+        })
+        return
+      }
+
+      if (numberOfAttemptsRemaining === 0) {
+        this.$q.notify({
+          message: 'Too many failed verification attempts. You may use a different number of try again.',
+          color: 'negative',
+          position: 'top',
+        })
+        this.signInRestart()
+        return
+      }
+    },
+    redirectAfterSuccessfulSignIn () {
+      const isOnboarding = this.$store.getters['auth/isOnboarding']
+      const isWaitlisted = this.$store.getters['auth/isWaitlisted']
+
+      const shouldRedirectToOnboarding = isOnboarding
+      const shouldRedirectToWaitlisted = !shouldRedirectToOnboarding && isWaitlisted
+
+      if (shouldRedirectToOnboarding) {
+        this.$router.push({ name: 'auth.onboarding' })
+      } else if (shouldRedirectToWaitlisted) {
+        this.$router.push({ name: 'auth.waitlisted' })
+      } else {
+        this.$router.push({ name: 'index' })
+      }
     },
   },
 }
 </script>
 
 <style>
+.auth-login-back-btn {
+  width: 0.7rem;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  cursor: pointer;
+}
+
 .centered {
   display: grid;
   place-items: center;

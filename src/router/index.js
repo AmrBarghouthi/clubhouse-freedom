@@ -14,7 +14,7 @@ Vue.use(VueRouter)
  * with the Router instance.
  */
 
-export default function ({ store }) {
+export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,
@@ -26,18 +26,6 @@ export default function ({ store }) {
     base: process.env.VUE_ROUTER_BASE,
   })
 
-  Router.beforeEach((to, from, next) => {
-    const isOnboarding = store.getters['auth/isOnboarding']
-    const isWaitlisted = store.getters['auth/isWaitlisted']
-
-    if (isOnboarding && to.name !== 'auth.onboarding') {
-      next({ name: 'auth.onboarding' })
-    } else if (!isOnboarding && isWaitlisted && to.name !== 'auth.waitlisted') {
-      next({ name: 'auth.waitlisted' })
-    } else {
-      next()
-    }
-  })
 
   return Router
 }
