@@ -1,9 +1,47 @@
-import ajax from './ajax'
-
+import Axios from 'axios'
+import { machineIdSync } from 'node-machine-id'
 export default class ClubhouseApi {
 
-  constructor (credentials = null) {
+  constructor ({ credentials, onUnauthorizedError = null, onNetworkError = null }) {
     this.credentials = credentials
+    this.onUnauthorizedError = onUnauthorizedError
+    this.onNetworkError = onNetworkError
+  }
+
+  ajax (withAuthHeaders = true) {
+    const instance = Axios.create({
+      baseURL: 'https://www.clubhouseapi.com/api',
+      headers: {
+        'CH-AppBuild': '269',
+        'CH-AppVersion':'0.1.25',
+        'Content-Type':'application/json; charset=utf-8',
+        'CH-Languages':'en-US',
+        'CH-Locale':'en_US',
+        'Accept':'application/json',
+        'CH-DeviceId': machineIdSync(true),
+      },
+    })
+
+    instance.interceptors.response.use(response => response,  error => {
+      if (error?.message === 'Network Error' && typeof this.onNetworkError === 'function') {
+        this.onNetworkError()
+      }
+
+      if (error?.response?.status === 401 && typeof this.onUnauthorizedError === 'function') {
+        this.onUnauthorizedError()
+      }
+
+      return Promise.reject(error)
+    })
+
+    if (!withAuthHeaders) {
+      return instance
+    }
+
+    instance.defaults.headers.common['CH-UserID'] = this.getUserId()
+    instance.defaults.headers.common['Authorization'] = `Token ${this.getAuthToken()}`
+
+    return instance
   }
 
   getCredentials () {
@@ -18,15 +56,8 @@ export default class ClubhouseApi {
     return this.getCredentials().userId
   }
 
-  getAuthtoken () {
+  getAuthToken () {
     return this.getCredentials().authToken
-  }
-
-  getAuthHeaders () {
-    return {
-      'CH-UserID': this.getUserId(),
-      'Authorization': `Token ${this.getAuthtoken()}`,
-    }
   }
 
   startPhoneNumberAuth (phoneNumber) {
@@ -35,7 +66,9 @@ export default class ClubhouseApi {
     }
     const url = 'start_phone_number_auth'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data)
+      this
+        .ajax(false)
+        .post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
@@ -47,7 +80,9 @@ export default class ClubhouseApi {
     }
     const url = 'call_phone_number_auth'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data)
+      this
+        .ajax(false)
+        .post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
@@ -59,7 +94,9 @@ export default class ClubhouseApi {
     }
     const url = 'resend_phone_number_auth'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data)
+      this
+        .ajax(false)
+        .post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
@@ -72,282 +109,227 @@ export default class ClubhouseApi {
     }
     const url = 'complete_phone_number_auth'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data)
+      this
+        .ajax(false)
+        .post(url, data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   checkWaitlistStatus () {
-    const headers = this.getAuthHeaders()
-    const url = 'check_waitlist_status'
     return new Promise((resolve, reject) => {
-      ajax.post(url, {}, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('check_waitlist_status', {})
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   getChannel (channel) {
-    const headers = this.getAuthHeaders()
     const data = {
       channel,
       channel_id: null,
     }
-    const url = 'get_channel'
+
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, { headers })
+      this
+        .ajax()
+        .post('get_channel', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   updatePhoto (photo) {
-    const headers = this.getAuthHeaders()
     const data = new FormData()
     data.append('file', photo, 'image.jpg')
-    const url = 'update_photo'
 
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('update_photo', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   joinChannel (channel) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      channel,
-    }
-    const url = 'join_channel'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('join_channel', { channel })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   leaveChannel (channel) {
-    const headers = this.getAuthHeaders()
     const data = {
       channel,
       channel_id: null,
     }
-    const url = 'leave_channel'
 
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('leave_channel', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   getProfile (userId) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      user_id: userId,
-    }
-    const url = 'get_profile'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('get_profile', { user_id: userId })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   getChannels () {
-    const headers = this.getAuthHeaders()
-    const data = {
-    }
-    const url = 'get_channels'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('get_channels')
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   updateUsername (username) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      username,
-    }
-    const url = 'update_username'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('update_username', { username })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   updateName (name) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      name,
-    }
-    const url = 'update_name'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('update_name', { name })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   refreshToken (refreshToken) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      refresh: refreshToken,
-    }
-    const url = 'refresh_token'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('refresh_token', { refresh: refreshToken })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   updateBio (bio) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      bio: bio,
-    }
-    const url = 'update_bio'
-
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('update_bio', { bio })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   acceptSpeakerInvite (channel, userId) {
-    const headers = this.getAuthHeaders()
     const data = {
       channel,
       user_id: userId,
     }
-    const url = 'accept_speaker_invite'
 
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('accept_speaker_invite', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   rejectSpeakerInvite (channel, userId) {
-    const headers = this.getAuthHeaders()
     const data = {
       channel,
       user_id: userId,
     }
-    const url = 'reject_speaker_invite'
 
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('reject_speaker_invite', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   audienceReply (channel, rasie = true, unraise = false) {
-    const headers = this.getAuthHeaders()
     const data = {
       channel,
       raise_hands: rasie,
       unraise_hands: unraise,
     }
-    const url = 'audience_reply'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('audience_reply', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   follow (userId, userIds = null, source = 4, sourceTopicId = null) {
-    const headers = this.getAuthHeaders()
     const data = {
       source_topic_id: sourceTopicId,
       user_ids: userIds,
       user_id: userId,
       source: source,
     }
-    const url = 'follow'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('follow', data)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   unfollow (userId) {
-    const headers = this.getAuthHeaders()
-    const data = {
-      user_id: userId,
-    }
-    const url = 'unfollow'
     return new Promise((resolve, reject) => {
-      ajax.post(url, data, {
-        headers,
-      })
+      this
+        .ajax()
+        .post('unfollow', { user_id: userId })
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   getFollowing (userId, pageSize = 50, page = 1) {
-    const headers = this.getAuthHeaders()
     const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
     const url = `get_following?${query}`
     return new Promise((resolve, reject) => {
-      ajax.get(url, { headers })
+      this
+        .ajax()
+        .get(url)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
   }
 
   getFollowers (userId, pageSize = 50, page = 1) {
-    const headers = this.getAuthHeaders()
     const query = `user_id=${userId}&page_size=${pageSize}&page=${page}`
     const url = `get_followers?${query}`
     return new Promise((resolve, reject) => {
-      ajax.get(url, { headers })
+      this
+        .ajax()
+        .get(url)
         .then(res => resolve(res.data))
         .catch(err => reject(err))
     })
