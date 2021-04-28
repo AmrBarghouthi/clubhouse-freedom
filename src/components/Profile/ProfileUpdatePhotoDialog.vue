@@ -15,6 +15,7 @@
         <Avatar
           ref="avatar"
           :src="newPhotoSrc || photoUrl"
+          :name="name"
           size="7rem"
           clickable
           @click="photoClicked"
@@ -62,6 +63,10 @@ export default {
       default: false,
     },
     photoUrl: {
+      type: String,
+      default: '',
+    },
+    name: {
       type: String,
       default: '',
     },
