@@ -92,9 +92,9 @@ export default {
   },
   computed: {
     initials () {
-      const segments = this.name.trim().split(' ')
+      const segments = this.name?.trim().split(' ')
 
-      if (segments[0] === '') {
+      if (!Array.isArray(segments) || segments[0] === '') {
         return 'CH'
       }
 
