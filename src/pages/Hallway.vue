@@ -61,6 +61,9 @@ export default {
     HallwayStartRoomBtn,
     HallwayTopToolbar,
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => vm.getRoomsAndEvents())
+  },
   data () {
     return {
       rooms: [],
@@ -69,9 +72,6 @@ export default {
         isBusy: false,
       },
     }
-  },
-  created () {
-    this.getRoomsAndEvents()
   },
   methods: {
     async getRoomsAndEvents () {
