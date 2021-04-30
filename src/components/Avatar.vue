@@ -1,6 +1,5 @@
 <template>
   <div
-    class="main-container"
     :style="`height: ${size};`"
     @click="$emit('click')"
   >
@@ -136,10 +135,6 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  position: relative;
-}
-
 .container {
   position: relative;
   display: inline-grid;
