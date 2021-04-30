@@ -120,7 +120,7 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Clubhouse Freedom Client',
+        name: 'Clubhouse Freedom',
         short_name: 'CH Freedom',
         description: '',
         display: 'standalone',
