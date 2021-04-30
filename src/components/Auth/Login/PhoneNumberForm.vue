@@ -17,7 +17,7 @@
       class="q-mt-lg"
     />
 
-    <NextButton
+    <NextBtn
       :loading="loading"
       :disable="!isValidPhoneNumber"
     />
@@ -25,13 +25,13 @@
 </template>
 
 <script>
-import NextButton from 'components/Auth/NextButton'
+import NextBtn from 'components/Auth/NextBtn'
 import parsePhoneNumber from 'libphonenumber-js'
 
 export default {
   name: 'AuthLoginPhoneNumberForm',
   components: {
-    NextButton,
+    NextBtn,
   },
   props: {
     busy: {

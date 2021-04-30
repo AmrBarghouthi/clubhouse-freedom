@@ -41,7 +41,7 @@
       />
     </div>
 
-    <NextButton
+    <NextBtn
       :loading="loading"
       :disable="smsVerificationCode.length !== 4"
     />
@@ -49,12 +49,12 @@
 </template>
 
 <script>
-import NextButton from 'components/Auth/NextButton'
+import NextBtn from 'components/Auth/NextBtn'
 
 export default {
   name: 'AuthLoginSmsVerificationForm',
   components: {
-    NextButton,
+    NextBtn,
   },
   props: {
     busy: {

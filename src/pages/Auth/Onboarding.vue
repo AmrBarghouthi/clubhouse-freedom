@@ -54,7 +54,7 @@
           People use real names on Clubhouse :) Thnx!
         </div>
 
-        <NextButton
+        <NextBtn
           :loading="state.isBusy"
           :disable="state.isBusy"
         />
@@ -88,7 +88,7 @@
           input-class="onboarding-name-input"
         />
 
-        <NextButton
+        <NextBtn
           :loading="state.isBusy"
           :disable="state.isBusy"
         />
@@ -100,12 +100,12 @@
 </template>
 
 <script>
-import NextButton from 'components/Auth/NextButton'
+import NextBtn from 'components/Auth/NextBtn'
 
 export default {
   name: 'AuthOnboardingPage',
   components: {
-    NextButton,
+    NextBtn,
   },
   data () {
     return {

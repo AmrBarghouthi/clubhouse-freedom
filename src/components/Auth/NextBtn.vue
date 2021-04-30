@@ -18,7 +18,7 @@
 <script>
 
 export default {
-  name: 'AuthNextButton',
+  name: 'AuthNextBtn',
   props: {
     loading: {
       type: Boolean,
