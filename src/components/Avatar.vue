@@ -1,5 +1,6 @@
 <template>
   <div
+    class="main-container"
     :style="`height: ${size};`"
     @click="$emit('click')"
   >
@@ -57,12 +58,23 @@
       >
         <span class="initials-text">{{ initials }}</span>
       </div>
-
+      <div
+        v-if="muted"
+        class="mic-icon-container"
+      >
+        <q-icon
+          :name="ionMicOff"
+          :size="`calc(${size}/3.4)`"
+          class="mic-icon"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ionMicOff } from '@quasar/extras/ionicons-v5'
+
 export default {
   props: {
     size: {
@@ -89,6 +101,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    muted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data () {
+    return {
+      ionMicOff,
+    }
   },
   computed: {
     initials () {
@@ -114,7 +135,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.main-container {
+  position: relative;
+}
+
 .container {
   position: relative;
   display: inline-grid;
@@ -131,6 +156,18 @@ export default {
 .initials-text {
   font-size: 0.35em;
   color: gray;
+}
+
+.mic-icon-container {
+  position: absolute;
+  right: 0;
+}
+
+.mic-icon {
+  background-color: white;
+  border-radius: 100%;
+  padding: .1em;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 </style>

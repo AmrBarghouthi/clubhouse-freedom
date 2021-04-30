@@ -19,6 +19,7 @@
             :name="speaker.name"
             glows
             :glowing="isSpeakingNow(speaker.user_id)"
+            :muted="isMuted(speaker.user_id)"
           />
           <div class="q-mt-sm under-photo">
             <SpeakerAsterisk
@@ -27,10 +28,6 @@
             />
             <span style="margin-left: 3px;">
               <span>{{ speaker.first_name }}</span>
-              <q-icon
-                v-if="isMuted(speaker.user_id)"
-                name="fas fa-microphone-slash"
-              />
             </span>
           </div>
         </div>
