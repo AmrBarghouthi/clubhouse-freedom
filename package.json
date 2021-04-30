@@ -1,8 +1,8 @@
 {
-  "name": "clubhouse-client",
+  "name": "clubhouse-freedom-client",
   "version": "0.0.1",
   "description": "",
-  "productName": "Clubhouse Client",
+  "productName": "Clubhouse Freedom Client",
   "author": "Amr Barghouthi <barghouthi.a@gmail.com>",
   "private": true,
   "scripts": {

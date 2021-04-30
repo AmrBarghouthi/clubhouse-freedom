@@ -1,4 +1,4 @@
-# Clubhouse Client (clubhouse-client)
+# Clubhouse Freedom Client (clubhouse-freedom-client)
 
 
 

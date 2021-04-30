@@ -120,8 +120,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Clubhouse Client',
-        short_name: 'Clubhouse Client',
+        name: 'Clubhouse Freedom Client',
+        short_name: 'CH Freedom',
         description: '',
         display: 'standalone',
         orientation: 'portrait',
@@ -187,7 +187,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'clubhouse-client',
+        appId: 'clubhouse-freedom-client',
       },
 
       // More info: https://v1.quasar.dev/quasar-cli/developing-electron-apps/node-integration
