@@ -255,7 +255,7 @@ export default {
     },
     leaveRoom () {
       this.$roomController.leaveRoom()
-      this.$router.push({ name: 'index' })
+      this.$router.push({ name: 'hallway' })
     },
     invitedToSpeakEvent (userName, userId) {
       this.invite = {

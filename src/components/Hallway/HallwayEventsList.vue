@@ -22,7 +22,7 @@
 import moment from 'moment'
 
 export default {
-  name: 'IndexEventsList',
+  name: 'HallwayEventsList',
   props: {
     events: {
       type: Array,

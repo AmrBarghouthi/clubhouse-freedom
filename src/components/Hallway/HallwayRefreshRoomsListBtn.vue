@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'IndexRefreshRoomsListBtn',
+  name: 'HallwayRefreshRoomsListBtn',
   props: {
     busy: {
       type: Boolean,

@@ -57,7 +57,7 @@ import {
 import Avatar from 'components/Avatar'
 
 export default {
-  name: 'IndexTopToolbar',
+  name: 'HallwayTopToolbar',
   components: {
     Avatar,
   },

@@ -4,7 +4,7 @@
     class="bg-alabaster"
   >
     <q-header class="bg-alabaster text-black">
-      <TopToolbar
+      <HallwayTopToolbar
         class="q-mt-md q-mb-sm q-mx-md"
         @profilephotoclick="goToProfile"
       />
@@ -12,14 +12,14 @@
 
     <q-page-container>
       <q-page class="bg-alabaster center-it q-mx-md">
-        <EventsList
+        <HallwayEventsList
           v-if="events.length"
           :events="events"
           :busy="state.isBusy"
           class="q-mx-md q-mb-md flex-1"
           @roomclicked="roomClickedHandler"
         />
-        <RoomsList
+        <HallwayRoomsList
           :rooms="rooms"
           :busy="state.isBusy"
           class="q-mx-md flex-1"
@@ -29,13 +29,13 @@
           position="bottom"
           :offset="[18, 18]"
         >
-          <StartRoomBtn />
+          <HallwayStartRoomBtn />
         </q-page-sticky>
         <q-page-sticky
           position="bottom-left"
           :offset="[18, 18]"
         >
-          <RefreshRoomsListBtn
+          <HallwayRefreshRoomsListBtn
             :busy="state.isBusy"
             @click="getRoomsAndEvents"
           />
@@ -46,20 +46,20 @@
 </template>
 
 <script>
-import EventsList from 'components/Index/EventsList'
-import RefreshRoomsListBtn from 'components/Index/RefreshRoomsListBtn'
-import RoomsList from 'components/Index/RoomsList'
-import StartRoomBtn from 'components/Index/StartRoomBtn'
-import TopToolbar from 'components/Index/TopToolbar'
+import HallwayEventsList from 'components/Hallway/HallwayEventsList'
+import HallwayRefreshRoomsListBtn from 'components/Hallway/HallwayRefreshRoomsListBtn'
+import HallwayRoomsList from 'components/Hallway/HallwayRoomsList'
+import HallwayStartRoomBtn from 'components/Hallway/HallwayStartRoomBtn'
+import HallwayTopToolbar from 'components/Hallway/HallwayTopToolbar'
 
 export default {
-  name: 'PageIndex',
+  name: 'PageHallway',
   components: {
-    EventsList,
-    RefreshRoomsListBtn,
-    RoomsList,
-    StartRoomBtn,
-    TopToolbar,
+    HallwayEventsList,
+    HallwayRefreshRoomsListBtn,
+    HallwayRoomsList,
+    HallwayStartRoomBtn,
+    HallwayTopToolbar,
   },
   data () {
     return {

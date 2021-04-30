@@ -170,7 +170,7 @@ export default {
             return
           }
 
-          this.$router.push({ name: 'index' })
+          this.$router.push({ name: 'hallway' })
         })
         .catch(err => {
           if (err?.response?.data?.error_message) {

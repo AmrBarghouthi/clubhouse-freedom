@@ -168,7 +168,7 @@ export default {
       } else if (shouldRedirectToWaitlisted) {
         this.$router.push({ name: 'auth.waitlisted' })
       } else {
-        this.$router.push({ name: 'index' })
+        this.$router.push({ name: 'hallway' })
       }
     },
   },

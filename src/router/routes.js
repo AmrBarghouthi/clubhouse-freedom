@@ -1,12 +1,12 @@
 const routes = [
   {
     path: '/hallway',
-    name: 'index',
-    component: () => import('pages/Index.vue'),
+    name: 'hallway',
+    component: () => import('src/pages/Hallway.vue'),
   },
   {
     path: '/',
-    redirect: { name: 'index' },
+    redirect: { name: 'hallway' },
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {

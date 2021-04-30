@@ -78,7 +78,7 @@ import Avatar from 'components/Avatar'
 import { ionChatbubbleEllipses, ionChatbubbleEllipsesOutline, ionPerson } from '@quasar/extras/ionicons-v5'
 
 export default {
-  name: 'IndexRoomsList',
+  name: 'HallwayRoomsList',
   components: {
     Avatar,
   },
