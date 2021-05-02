@@ -245,15 +245,8 @@ export default class RoomController {
     })
   }
 
-  raiseHand () {
-    this.clubhouseApi.audienceReply(this.currentRoom, true, false)
-    this.handRaisd = true
+  setHandRaised (handRaised) {
+    this.clubhouseApi.audienceReply(this.currentRoom, handRaised, !handRaised)
+    this.handRaisd = handRaised
   }
-
-  unraiseHand () {
-    this.clubhouseApi.audienceReply(this.currentRoom, false, true)
-    this.handRaisd = false
-  }
-
-
 };

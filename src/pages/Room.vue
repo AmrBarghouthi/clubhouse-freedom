@@ -26,10 +26,10 @@
       :disable="!roomInfo.is_handraise_enabled"
       class="q-pa-md"
       @leaveroom="leaveRoom"
-      @mute="mute"
-      @unmute="unmute"
-      @raisehand="raiseHand"
-      @unraisehand="unraiseHand"
+      @mute="updateMute(true)"
+      @unmute="updateMute(false)"
+      @raisehand="updateHandRaised(true)"
+      @unraisehand="updateHandRaised(false)"
     />
   </q-page>
 </template>
@@ -161,13 +161,9 @@ export default {
         this.roomInfo.users[index].is_speaker = false
       }
     },
-    raiseHand () {
-      this.$roomController.raiseHand()
-      this.handRaised = true
-    },
-    unraiseHand () {
-      this.$roomController.unraiseHand()
-      this.handRaised = false
+    updateHandRaised (handRaised) {
+      this.$roomController.setHandRaised(handRaised)
+      this.handRaised = handRaised
     },
     leaveRoom () {
       this.$roomController.leaveRoom()
@@ -181,11 +177,8 @@ export default {
         timeout: 2500,
       })
     },
-    mute () {
-      this.$roomController.setMute(true)
-    },
-    unmute () {
-      this.$roomController.setMute(false)
+    updateMute (mute) {
+      this.$roomController.setMute(mute)
     },
   },
 }
