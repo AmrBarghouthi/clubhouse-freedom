@@ -21,9 +21,10 @@
       />
     </div>
     <RoomFooter
+      :local-user-is-speaker="localUserIsSpeaker"
       :muted="mutedUsersIds.has(localUserId)"
       :hand-raised="handRaised"
-      :disable="!roomInfo.is_handraise_enabled"
+      :can-raise-hand="roomInfo.is_handraise_enabled"
       class="q-pa-md"
       @leaveroom="leaveRoom"
       @mute="updateMute(true)"

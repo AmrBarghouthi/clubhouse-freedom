@@ -13,7 +13,7 @@
       <RoomHandRaiseUnraiseBtn
         v-else
         :hand-raised="handRaised"
-        :disable="canRaiseHand"
+        :disable="!canRaiseHand"
         class="q-ml-md"
         @raisehand="$emit('raisehand')"
         @unraisehand="$emit('unraisehand')"
