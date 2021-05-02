@@ -142,6 +142,7 @@ export default {
       this.$q
         .dialog({ component: RoomInvitedToSpeakDialog, inviterName })
         .onOk(() => this.$roomController.acceptSpeakerInvite(inviterId))
+        .onCancel(() => this.$roomController.rejectSpeakerInvite(inviterId))
     },
     onRoomUpdated (roomInfo) {
       this.roomInfo = roomInfo

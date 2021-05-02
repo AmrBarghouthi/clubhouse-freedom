@@ -150,6 +150,10 @@ export default class RoomController {
       .then(() => this.updateRoom())
   }
 
+  rejectSpeakerInvite (inviterId) {
+    this.clubhouseApi.rejectSpeakerInvite(this.currentRoom, inviterId)
+  }
+
   speakerRemovedEvent (userId) {
     this.speakerRemovedListeners.forEach(cb => cb(userId))
   }
