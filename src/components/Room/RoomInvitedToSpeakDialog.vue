@@ -1,8 +1,9 @@
 <template>
   <q-dialog
-    :value="show"
+    ref="dialog"
     position="top"
     seamless
+    @hide="$emit('hide')"
   >
     <div class="q-ma-none q-pa-md bg-positive text-white full-width no-box-shadow">
       <div>{{ inviterName }} invted you to speak</div>
@@ -13,7 +14,7 @@
           flat
           no-caps
           class="bg-positive-light text-white"
-          @click="$emit('dismiss')"
+          @click="onCancelClick"
         />
         <q-btn
           label="Join as a speaker"
@@ -21,7 +22,7 @@
           flat
           no-caps
           class="bg-white text-positive"
-          @click="$emit('accept')"
+          @click="onAcceptClick"
         />
       </div>
     </div>
@@ -36,9 +37,20 @@ export default {
       type: String,
       default: 'Someone',
     },
-    show: {
-      type: Boolean,
-      default: false,
+  },
+  methods: {
+    show () {
+      this.$refs.dialog.show()
+    },
+    hide () {
+      this.$refs.dialog.hide()
+    },
+    onAcceptClick () {
+      this.$emit('ok')
+      this.hide()
+    },
+    onCancelClick () {
+      this.hide()
     },
   },
 }

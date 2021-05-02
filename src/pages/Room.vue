@@ -31,12 +31,6 @@
       @raisehand="raiseHand"
       @unraisehand="unraiseHand"
     />
-    <RoomInvitedToSpeakDialog
-      :show="showInvitedToSpeakDialog"
-      :inviter-name="inviter.name"
-      @dismiss="showInvitedToSpeakDialog = false"
-      @accept="acceptInvitationToSpeak"
-    />
   </q-page>
 </template>
 
@@ -52,7 +46,6 @@ export default {
   name: 'PageRoom',
   components: {
     RoomFooter,
-    RoomInvitedToSpeakDialog,
     RoomSpeakersSection,
     RoomTopicLine,
     RoomUsersSection,
@@ -64,8 +57,6 @@ export default {
       speakingSpeakersRemoteIds: new Set(),
       mutedUsersIds: new Set(),
       handRaised: false,
-      showInvitedToSpeakDialog: false,
-      inviter: { name: null, id: null },
     }
   },
   computed: {
@@ -147,9 +138,10 @@ export default {
         ? this.mutedUsersIds.add(userId)
         : this.mutedUsersIds.delete(userId)
     },
-    onInvitedToSpeak (name, id) {
-      this.inviter = { name, id }
-      this.showInvitedToSpeakDialog = true
+    onInvitedToSpeak (inviterName, inviterId) {
+      this.$q
+        .dialog({ component: RoomInvitedToSpeakDialog, inviterName })
+        .onOk(() => this.$roomController.acceptSpeakerInvite(inviterId))
     },
     onRoomUpdated (roomInfo) {
       this.roomInfo = roomInfo
@@ -187,9 +179,6 @@ export default {
         position: 'top',
         timeout: 2500,
       })
-    },
-    acceptInvitationToSpeak () {
-      this.$roomController.acceptSpeakerInvite(this.inviter.id)
     },
     mute () {
       this.$roomController.setMute(true)
