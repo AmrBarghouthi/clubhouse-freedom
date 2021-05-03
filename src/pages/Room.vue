@@ -54,22 +54,12 @@ export default {
   data () {
     return {
       roomInfo: {},
-      localUserVolume: 0,
-      speakingSpeakersRemoteIds: new Set(),
+      speakingSpeakersIds: new Set(),
       mutedUsersIds: new Set(),
       handRaised: false,
     }
   },
   computed: {
-    speakingSpeakersIds () {
-      const speakingSpeakersIds = new Set(this.speakingSpeakersRemoteIds)
-
-      if (this.localUserVolume) {
-        this.speakingSpeakersRemoteIds.add(this.localUserId)
-      }
-
-      return speakingSpeakersIds
-    },
     localUserId () {
       return this.$store.getters['auth/userId']
     },
@@ -126,13 +116,19 @@ export default {
       }
     },
     onSpeakerUpdate (speakers) {
+      let ids = this.speakingSpeakersIds
       const localUser = speakers.find(speaker => speaker.uid === 0)
+
       if (localUser) {
-        this.localUserVolume = localUser.volume
+        localUser.volume > 0
+          ? ids.add(this.localUserId)
+          : ids.delete(this.localUserId)
       } else {
-        this.speakingSpeakersRemoteIds = new Set()
-        speakers.forEach(speaker => this.speakingSpeakersRemoteIds.add(speaker.uid))
+        ids = new Set(ids.has(this.localUserId) ? [this.localUserId] : [])
+        speakers.forEach(speaker => ids.add(speaker.uid))
       }
+
+      this.speakingSpeakersIds = ids
     },
     onUserMuteUpdated (userId, muted) {
       muted
