@@ -11,7 +11,7 @@
     </q-header>
 
     <q-page-container>
-      <q-page class="bg-alabaster center-it q-mx-md">
+      <q-page class="bg-alabaster row items-center q-mx-md">
         <HallwayEventsList
           v-if="events.length"
           :events="events"
@@ -61,6 +61,9 @@ export default {
     HallwayStartRoomBtn,
     HallwayTopToolbar,
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => vm.getRoomsAndEvents())
+  },
   data () {
     return {
       rooms: [],
@@ -69,9 +72,6 @@ export default {
         isBusy: false,
       },
     }
-  },
-  created () {
-    this.getRoomsAndEvents()
   },
   methods: {
     async getRoomsAndEvents () {
@@ -98,10 +98,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.center-it {
-  display: grid;
-  place-items: center;
-}
-</style>
