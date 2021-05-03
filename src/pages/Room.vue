@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 import RoomFooter from 'components/Room/RoomFooter'
 import RoomInvitedToSpeakDialog from 'components/Room/RoomInvitedToSpeakDialog'
 import RoomSpeakersSection from 'components/Room/RoomSpeakersSection'
@@ -64,20 +63,16 @@ export default {
       return this.$store.getters['auth/userId']
     },
     usersCategorized () {
-      return _.groupBy(this.roomInfo.users || [], user => {
-        const isSpeaker = user.is_speaker
-        const isFollowedBySpeakers = user.is_followed_by_speaker && !isSpeaker
-
-        if (isSpeaker) {
-          return 'speakers'
+      return (this.roomInfo?.users ?? []).reduce((accumulator, current) => {
+        if (current.is_speaker) {
+          accumulator.speakers.push(current)
+        } else if (current.is_followed_by_spseaker) {
+          accumulator.followedBySpeakers.push(current)
+        } else {
+          accumulator.others.push(current)
         }
-
-        if (isFollowedBySpeakers) {
-          return 'followedBySpeakers'
-        }
-
-        return 'others'
-      })
+        return accumulator
+      }, { speakers: [], followedBySpeakers: [], others: [] })
     },
     localUserIsSpeaker () {
       return this.usersCategorized?.speakers?.find(speaker => speaker.user_id === this.localUserId) !== undefined
