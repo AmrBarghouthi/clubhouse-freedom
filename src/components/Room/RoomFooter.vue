@@ -2,7 +2,8 @@
   <q-footer class="fixed-bottom row justify-between bg-white text-black">
     <RoomLeaveBtn @click="$emit('leaveroom')" />
     <div class="row">
-      <RoomPingFollowersBtn />
+      <RoomRefreshBtn @click="$emit('refresh')" />
+      <RoomPingFollowersBtn class="q-ml-md" />
       <RoomMuteBtn
         v-if="localUserIsSpeaker"
         :muted="muted"
@@ -27,6 +28,7 @@ import RoomHandRaiseUnraiseBtn from 'components/Room/RoomHandRaiseUnraiseBtn'
 import RoomLeaveBtn from 'components/Room/RoomLeaveBtn'
 import RoomMuteBtn from 'components/Room/RoomMuteBtn'
 import RoomPingFollowersBtn from 'components/Room/RoomPingFollowersBtn'
+import RoomRefreshBtn from 'components/Room/RoomRefreshBtn'
 
 export default {
   name: 'RoomFooter',
@@ -35,6 +37,7 @@ export default {
     RoomLeaveBtn,
     RoomMuteBtn,
     RoomPingFollowersBtn,
+    RoomRefreshBtn,
   },
   props: {
     localUserIsSpeaker: {

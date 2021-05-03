@@ -26,6 +26,7 @@
       :hand-raised="handRaised"
       :can-raise-hand="roomInfo.is_handraise_enabled"
       class="q-pa-md"
+      @refresh="refreshRoom"
       @leaveroom="leaveRoom"
       @mute="updateMute(true)"
       @unmute="updateMute(false)"
@@ -171,6 +172,9 @@ export default {
     },
     updateMute (mute) {
       this.$roomController.setMute(mute)
+    },
+    refreshRoom () {
+      this.$roomController.updateRoom()
     },
   },
 }
