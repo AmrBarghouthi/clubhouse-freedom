@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import RoomHandRaiseUnraiseBtn from 'components/Room/RoomHandRaiseUnraiseBtn'
-import RoomLeaveBtn from 'components/Room/RoomLeaveBtn'
-import RoomMuteBtn from 'components/Room/RoomMuteBtn'
-import RoomPingFollowersBtn from 'components/Room/RoomPingFollowersBtn'
-import RoomRefreshBtn from 'components/Room/RoomRefreshBtn'
+import RoomHandRaiseUnraiseBtn from './RoomHandRaiseUnraiseBtn'
+import RoomLeaveBtn from './RoomLeaveBtn'
+import RoomMuteBtn from './RoomMuteBtn'
+import RoomPingFollowersBtn from './RoomPingFollowersBtn'
+import RoomRefreshBtn from './RoomRefreshBtn'
 
 export default {
   name: 'RoomFooter',
