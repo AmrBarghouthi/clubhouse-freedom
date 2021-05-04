@@ -28,14 +28,24 @@
           v-if="profile"
           class="q-px-md"
         >
-
-          <Avatar
-            :src="profile.photo_url"
-            :name="profile.name"
-            size="4.5rem"
-            style="display: inline-block;"
-            @click="photoClickHandler"
-          />
+          <div class="row justify-between items-end">
+            <Avatar
+              :src="profile.photo_url"
+              :name="profile.name"
+              size="4.5rem"
+              style="display: inline-block;"
+              @click="photoClickHandler"
+            />
+            <ProfileFollowAndNotifications
+              v-if="!isAuthenticatedUserProfile"
+              :name="profile.name"
+              :notifications-type="profile.notification_type"
+              :following="isFollowing"
+              @notificationtypeupdated="updateNotificationType"
+              @follow="follow"
+              @unfollow="unfollow"
+            />
+          </div>
 
           <ProfileNameAndUsername
             :name="profile.name"
@@ -148,6 +158,7 @@ import Avatar from 'components/Avatar'
 import PageHeader from 'components/PageHeader'
 import ProfileAddBio from 'components/Profile/ProfileAddBio'
 import ProfileBio from 'components/Profile/ProfileBio'
+import ProfileFollowAndNotifications from 'components/Profile/ProfileFollowAndNotifications'
 import ProfileFollowingAndFollowers from 'components/Profile/ProfileFollowingAndFollowers'
 import ProfileNameAndUsername from 'components/Profile/ProfileNameAndUsername'
 import ProfileNominatedByBlock from 'components/Profile/ProfileNominatedByBlock'
@@ -163,6 +174,7 @@ export default {
     PageHeader,
     ProfileAddBio,
     ProfileBio,
+    ProfileFollowAndNotifications,
     ProfileFollowingAndFollowers,
     ProfileNameAndUsername,
     ProfileNominatedByBlock,
@@ -207,13 +219,18 @@ export default {
     canUpdatePhoto () {
       return this.isAuthenticatedUserProfile
     },
+    isFollowing () {
+      return this.$store.state.me.followingIds.find(id => this.profile.user_id == id) !== undefined
+    },
   },
   created () {
     this.getProfile(this.$route.params.userId)
   },
   methods: {
-    async getProfile (userId) {
-      this.profile = null
+    async getProfile (userId, clearPervious = true) {
+      if (clearPervious) {
+        this.profile = null
+      }
 
       this.$clubhouseApi.getProfile(userId ?? this.$store.getters['auth/userId'])
         .then(data => this.profile = data?.user_profile ?? null)
@@ -284,6 +301,26 @@ export default {
           this.state.isShowingUpdatePhotoForm = false
           this.state.isUpdatingPhoto = false
         })
+    },
+    follow () {
+      this.$clubhouseApi
+        .follow(this.profile.user_id)
+        .then(() => {
+          this.$store.commit('me/INSERT_IN_FOLLOWING', { userId: this.profile.user_id })
+          this.getProfile(this.$route.params.userId, false)
+        })
+        .catch(err => console.log(err))
+    },
+    unfollow () {
+      this.$clubhouseApi
+        .unfollow(this.profile.user_id)
+        .then(() => this.$store.commit('me/REMOVE_FROM_FOLLOWING', { userId: this.profile.user_id }))
+        .catch(err => console.log(err))
+    },
+    updateNotificationType (notificaitonType) {
+      this.$clubhouseApi
+        .updateFollowNotifications(this.profile.user_id, notificaitonType)
+        .then(() => this.profile.notification_type = notificaitonType)
     },
   },
 }

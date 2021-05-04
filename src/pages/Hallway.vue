@@ -62,7 +62,10 @@ export default {
     HallwayTopToolbar,
   },
   beforeRouteEnter (to, from, next) {
-    next(vm => vm.getRoomsAndEvents())
+    next(vm => {
+      vm.getRoomsAndEvents()
+      vm.getMe()
+    })
   },
   data () {
     return {
@@ -85,6 +88,11 @@ export default {
         .finally(() => {
           this.state.isBusy = false
         })
+    },
+    getMe () {
+      this.$clubhouseApi
+        .getMe(true, true)
+        .then(data => this.$store.commit('me/SET', data))
     },
     enterRoom (roomCode) {
       this.$router.push({ name: 'room', params: { roomCode: roomCode } })
