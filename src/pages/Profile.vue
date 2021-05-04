@@ -38,7 +38,10 @@
             />
             <ProfileFollowAndNotifications
               v-if="!isAuthenticatedUserProfile"
+              :name="profile.name"
+              :notifications-type="profile.notification_type"
               :following="isFollowing"
+              @notificationtypeupdated="updateNotificationType"
               @follow="follow"
               @unfollow="unfollow"
             />
@@ -224,8 +227,10 @@ export default {
     this.getProfile(this.$route.params.userId)
   },
   methods: {
-    async getProfile (userId) {
-      this.profile = null
+    async getProfile (userId, clearPervious = true) {
+      if (clearPervious) {
+        this.profile = null
+      }
 
       this.$clubhouseApi.getProfile(userId ?? this.$store.getters['auth/userId'])
         .then(data => this.profile = data?.user_profile ?? null)
@@ -300,14 +305,22 @@ export default {
     follow () {
       this.$clubhouseApi
         .follow(this.profile.user_id)
-        .then(() => this.$store.commit('me/INSERT_IN_FOLLOWING_IDS', { userId: this.profile.user_id }))
+        .then(() => {
+          this.$store.commit('me/INSERT_IN_FOLLOWING', { userId: this.profile.user_id })
+          this.getProfile(this.$route.params.userId, false)
+        })
         .catch(err => console.log(err))
     },
     unfollow () {
       this.$clubhouseApi
         .unfollow(this.profile.user_id)
-        .then(() => this.$store.commit('me/REMOVE_FROM_FOLLOWING_IDS', { userId: this.profile.user_id }))
+        .then(() => this.$store.commit('me/REMOVE_FROM_FOLLOWING', { userId: this.profile.user_id }))
         .catch(err => console.log(err))
+    },
+    updateNotificationType (notificaitonType) {
+      this.$clubhouseApi
+        .updateFollowNotifications(this.profile.user_id, notificaitonType)
+        .then(() => this.profile.notification_type = notificaitonType)
     },
   },
 }
