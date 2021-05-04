@@ -1,5 +1,5 @@
 {
-  "name": "clubhouse-freedom-client",
+  "name": "clubhouse-freedom",
   "productName": "Clubhouse Freedom",
   "version": "0.0.1",
   "private": true,
@@ -7,9 +7,9 @@
   "keywords": [
     "clubhouse"
   ],
-  "homepage": "https://github.com/AmrBarghouthi/clubhouse-freedom-client",
-  "bugs": "https://github.com/AmrBarghouthi/clubhouse-freedom-client/issues",
-  "repository": "github:AmrBarghouthi/clubhouse-freedom-client",
+  "homepage": "https://github.com/AmrBarghouthi/clubhouse-freedom",
+  "bugs": "https://github.com/AmrBarghouthi/clubhouse-freedom/issues",
+  "repository": "github:AmrBarghouthi/clubhouse-freedom",
   "author": "Amr Barghouthi <barghouthi.a@gmail.com>",
   "contributors": [
     "Zaid Barghouthi <barghouthi.z@gmail.com>"
