@@ -349,4 +349,16 @@ export default class ClubhouseApi {
     })
   }
 
+  updateFollowNotifications (userId, notificationType) {
+    return new Promise((resolve, reject) => {
+      this
+        .ajax()
+        .post('update_follow_notifications', {
+          user_id: userId,
+          notification_type: notificationType,
+        })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
 }
