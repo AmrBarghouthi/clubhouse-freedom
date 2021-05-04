@@ -28,14 +28,21 @@
           v-if="profile"
           class="q-px-md"
         >
-
-          <Avatar
-            :src="profile.photo_url"
-            :name="profile.name"
-            size="4.5rem"
-            style="display: inline-block;"
-            @click="photoClickHandler"
-          />
+          <div class="row justify-between items-end">
+            <Avatar
+              :src="profile.photo_url"
+              :name="profile.name"
+              size="4.5rem"
+              style="display: inline-block;"
+              @click="photoClickHandler"
+            />
+            <ProfileFollowAndNotifications
+              v-if="!isAuthenticatedUserProfile"
+              :following="isFollowing"
+              @follow="follow"
+              @unfollow="unfollow"
+            />
+          </div>
 
           <ProfileNameAndUsername
             :name="profile.name"
@@ -148,6 +155,7 @@ import Avatar from 'components/Avatar'
 import PageHeader from 'components/PageHeader'
 import ProfileAddBio from 'components/Profile/ProfileAddBio'
 import ProfileBio from 'components/Profile/ProfileBio'
+import ProfileFollowAndNotifications from 'components/Profile/ProfileFollowAndNotifications'
 import ProfileFollowingAndFollowers from 'components/Profile/ProfileFollowingAndFollowers'
 import ProfileNameAndUsername from 'components/Profile/ProfileNameAndUsername'
 import ProfileNominatedByBlock from 'components/Profile/ProfileNominatedByBlock'
@@ -163,6 +171,7 @@ export default {
     PageHeader,
     ProfileAddBio,
     ProfileBio,
+    ProfileFollowAndNotifications,
     ProfileFollowingAndFollowers,
     ProfileNameAndUsername,
     ProfileNominatedByBlock,
@@ -206,6 +215,9 @@ export default {
     },
     canUpdatePhoto () {
       return this.isAuthenticatedUserProfile
+    },
+    isFollowing () {
+      return this.$store.state.me.followingIds.find(id => this.profile.user_id == id) !== undefined
     },
   },
   created () {
@@ -284,6 +296,18 @@ export default {
           this.state.isShowingUpdatePhotoForm = false
           this.state.isUpdatingPhoto = false
         })
+    },
+    follow () {
+      this.$clubhouseApi
+        .follow(this.profile.user_id)
+        .then(() => this.$store.commit('me/INSERT_IN_FOLLOWING_IDS', { userId: this.profile.user_id }))
+        .catch(err => console.log(err))
+    },
+    unfollow () {
+      this.$clubhouseApi
+        .unfollow(this.profile.user_id)
+        .then(() => this.$store.commit('me/REMOVE_FROM_FOLLOWING_IDS', { userId: this.profile.user_id }))
+        .catch(err => console.log(err))
     },
   },
 }

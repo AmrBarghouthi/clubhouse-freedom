@@ -180,6 +180,20 @@ export default class ClubhouseApi {
     })
   }
 
+  getMe (returnFollowingIds = true, returnBlockedIds = true) {
+    return new Promise((resolve, reject) => {
+      this
+        .ajax()
+        .post('me', {
+          return_blocked_ids: returnBlockedIds,
+          timezone_identifier: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          return_following_ids: returnFollowingIds,
+        })
+        .then(res => resolve(res.data))
+        .catch(err => reject(err))
+    })
+  }
+
   getProfile (userId) {
     return new Promise((resolve, reject) => {
       this
