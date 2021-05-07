@@ -1,13 +1,12 @@
 <template>
   <q-footer class="fixed-bottom row justify-between bg-white text-black">
     <RoomLeaveBtn @click="$emit('leaveroom')" />
-    <div class="row">
+    <div class="row q-gutter-x-sm">
       <RoomRefreshBtn @click="$emit('refresh')" />
-      <RoomPingFollowersBtn class="q-ml-md" />
+      <RoomPingFollowersBtn />
       <RoomMuteBtn
         v-if="localUserIsSpeaker"
         :muted="muted"
-        class="q-ml-md"
         @mute="$emit('mute')"
         @unmute="$emit('unmute')"
       />
@@ -15,7 +14,6 @@
         v-else
         :hand-raised="handRaised"
         :disable="!canRaiseHand"
-        class="q-ml-md"
         @raisehand="$emit('raisehand')"
         @unraisehand="$emit('unraisehand')"
       />
